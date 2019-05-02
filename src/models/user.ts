@@ -1,5 +1,7 @@
 import mongoose from 'mongoose';
-import Joi from 'joi';
+import Joi, { func } from 'joi';
+import jwt from 'jsonwebtoken';
+import config from 'config';
 
 export enum roles {
   ADMIN = "ADMIN",
@@ -35,6 +37,11 @@ const userSchema = new mongoose.Schema({
     default: roles.USER
   }
 });
+
+userSchema.methods.generateAuthToken =  function () {
+  const token = jwt.sign({ _id: this._id }, config.get('jwtPrivateKey'));
+  return token;
+}
 
 export function validateUser(user: any) {
   const schema = {
