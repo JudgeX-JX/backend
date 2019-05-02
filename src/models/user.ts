@@ -38,7 +38,7 @@ const userSchema = new mongoose.Schema({
   }
 });
 
-userSchema.methods.generateAuthToken =  function () {
+userSchema.methods.generateAuthToken = function () {
   const token = jwt.sign({ _id: this._id }, config.get('jwtPrivateKey'));
   return token;
 }
@@ -48,7 +48,6 @@ export function validateUser(user: any) {
     name: Joi.string().min(3).max(50).required(),
     email: Joi.string().min(3).max(50).required().email(),
     password: Joi.string().min(6).max(50).required(),
-    role: Joi.string().valid(...rolesArr)
   };
 
   return Joi.validate(user, schema);
