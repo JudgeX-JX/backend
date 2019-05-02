@@ -1,5 +1,5 @@
 import express from 'express';
-import { User, validateUser, roles } from '../models/user';
+import { User, validateUser } from '../models/user';
 import _ from 'lodash';
 import bcrypt from 'bcryptjs';
 
