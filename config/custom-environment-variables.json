@@ -1,3 +1,4 @@
 {
-    "mongoUrl": "codecoursez_mongoUrl"
+    "mongoUrl": "codecoursez_mongoUrl",
+    "jwtPrivateKey": "codecoursez_jwtPrivateKey"
 }
