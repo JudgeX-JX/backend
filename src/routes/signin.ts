@@ -18,10 +18,15 @@ router.post('/', async (req, res) => {
   const user: any = await User.findOne({
     email: req.body.email
   });
-  if (!user) return res.status(401).send("Invalid email or password!");
+
+  if (!user) return res.status(401).json({
+    message: "Invalid email or password!"
+  });
 
   const validPassword = await bcrypt.compare(req.body.password, user.password);
-  if (!validPassword) return res.status(401).send("Invalid email or password!");
+  if (!validPassword) return res.status(401).json({
+    message: "Invalid email or password!"
+  });
 
   res
     .header('x-auth-token', user.generateAuthToken())
