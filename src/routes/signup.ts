@@ -11,12 +11,12 @@ router.post('/', async (req, res) => {
     error
   } = validateUser(req.body);
 
-  if (error) return res.status(400).json({
+  if (error) return res.status(422).json({
     message: error.details[0].message
   });
 
   if (await User.findOne({ email: req.body.email }))
-    return res.status(400).json({
+    return res.status(422).json({
       message: "This email already exists!"
     });
 

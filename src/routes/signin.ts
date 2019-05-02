@@ -9,16 +9,19 @@ const router = express.Router();
 router.post('/', async (req, res) => {
   const {
     error
-  } = validateLogin(req.body);
-  if (error) return res.status(400).send(error.details[0].message);
+  } = validateSignin(req.body);
+
+  if (error) return res.status(422).json({
+    message: error.details[0].message
+  });
 
   const user: any = await User.findOne({
     email: req.body.email
   });
-  if (!user) return res.status(400).send("Invalid email or password!");
+  if (!user) return res.status(401).send("Invalid email or password!");
 
   const validPassword = await bcrypt.compare(req.body.password, user.password);
-  if (!validPassword) return res.status(400).send("Invalid email or password!");
+  if (!validPassword) return res.status(401).send("Invalid email or password!");
 
   res
     .header('x-auth-token', user.generateAuthToken())
@@ -26,7 +29,7 @@ router.post('/', async (req, res) => {
 
 });
 
-function validateLogin(user: any) {
+function validateSignin(user: any) {
   const schema = {
     email: Joi.string().email().required().min(3).max(50),
     password: Joi.string().required().min(6).max(50)
