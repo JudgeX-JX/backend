@@ -2,7 +2,8 @@ import express from 'express';
 import helmet from 'helmet';
 import config from 'config';
 import mongoose from 'mongoose';
-import users from './routes/users';
+import signin from './routes/signin';
+import signup from './routes/signup';
 import problems from './routes/problems';
 import contests from "./routes/contests";
 
@@ -13,7 +14,8 @@ const app = express();
 app.use(express.json());
 app.use(helmet());
 // Routes
-app.use('/users', users);
+app.use('/signin', signin);
+app.use('/signup', signup);
 app.use('/problems', problems);
 app.use('/contests', contests);
 
