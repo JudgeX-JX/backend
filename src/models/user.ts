@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import Joi, { func } from 'joi';
+import Joi from 'joi';
 import jwt from 'jsonwebtoken';
 import config from 'config';
 
