@@ -1,7 +1,4 @@
-export function enumToArray(enums: any): string[] {
-  let enumArr: string[] = [];
-  for (let e in enums) {
-    enumArr.push(e);
-  }
-  return enumArr;
+export function enumToArray(enumObject: any): string[] {
+  const keys = Object.keys(enumObject).filter(key => typeof enumObject[key as any] === "number");
+  return keys;
 }
