@@ -4,7 +4,7 @@ import bcrypt from 'bcryptjs';
 import Joi from 'joi';
 
 
-export const signin = async (req: any, res: any) => {
+export async function signin(req: any, res: any) {
   const {
     error
   } = validateSignin(req.body);
@@ -32,7 +32,7 @@ export const signin = async (req: any, res: any) => {
 
 }
 
-export const signup = async (req: any, res: any) => {
+export async function signup(req: any, res: any) {
   const {
     error
   } = validateUser(req.body);
