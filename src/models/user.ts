@@ -9,11 +9,6 @@ export enum roles {
   USER = "USER"
 }
 
-let rolesArr: string[] = [];
-for (let role in roles) {
-  rolesArr.push(role);
-}
-
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
