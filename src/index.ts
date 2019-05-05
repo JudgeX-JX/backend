@@ -5,7 +5,7 @@ import signup from './routes/signup';
 import problems from './routes/problems';
 import contests from './routes/contests';
 import submissions from './routes/submissions';
-import { connectToMongo } from './lib/connectToMongo';
+import { connectToMongo } from './utils/connectToMongo';
 
 connectToMongo();
 
