@@ -1,15 +1,19 @@
 import express from 'express';
+import * as submissionController from '../controllers/submissionController';
+import { authenticate } from '../middlewares/authentication';
+import { authorize } from '../middlewares/authorization';
+import { Roles } from '../models/user';
 
 const router = express.Router();
 
-router.get('/', );
-router.get('/:id', );
+router.get('/', submissionController.getAll);
+router.get('/:id', submissionController.getWithId);
 
-// Make sure that the user is authenticated
-router.post('/', );
+router.use(authenticate);
+router.post('/', submissionController.create);
 
-// and is Admin
-router.put('/:id', );
-router.delete('/:id', );
+router.use(authorize([Roles.ADMIN]));
+router.put('/:id', submissionController.updateWithId);
+router.delete('/:id', submissionController.deleteWithId);
 
 export default router;
