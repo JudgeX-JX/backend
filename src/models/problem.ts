@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import Joi from "joi";
 import { enumToArray } from '../utils/enumToArray';
+import mongoosePaginate from 'mongoose-paginate-v2';
 
 export enum Difficulty {
   EASY,
@@ -54,6 +55,8 @@ const problemSchema = new mongoose.Schema({
   },
 
 });
+
+problemSchema.plugin(mongoosePaginate);
 
 export const Problem = mongoose.model("Problem", problemSchema);
 
