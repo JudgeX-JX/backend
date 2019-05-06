@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import Joi from "joi";
+import mongoosePaginate from 'mongoose-paginate-v2';
 
 const contestSchema = new mongoose.Schema({
   name: {
@@ -36,6 +37,8 @@ const contestSchema = new mongoose.Schema({
     default: null // no password by default (the contest is general i.e: available for all the users)
   }
 });
+
+contestSchema.plugin(mongoosePaginate);
 
 export const Contest = mongoose.model("Contest", contestSchema);
 
