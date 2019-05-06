@@ -31,6 +31,10 @@ const submissionSchema = new mongoose.Schema({
     ref: "User",
     required: true
   },
+  sourceCode: {
+    type: String,
+    required: true
+  },
   verdict: {
     type: String,
     default: Verdict[Verdict.PENDING],
@@ -40,7 +44,7 @@ const submissionSchema = new mongoose.Schema({
     type: Date,
     default: Date.now()
   },
-  runTime: {
+  executionTime: {
     type: Number,
     default: null
   },
@@ -55,7 +59,8 @@ export const Submission = mongoose.model("Submission", submissionSchema);
 export function validateSubmission(submission: any){
   const schema = {
     problem: Joi.string().required().min(1),
-    user: Joi.string().required().min(1)
+    user: Joi.string().required().min(1),
+    sourceCode: Joi.string().required().min(1)
   };
   return Joi.validate(submission, schema);
 }
