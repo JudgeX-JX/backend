@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import Joi from "joi";
 import { enumToArray } from '../utils/enumToArray';
+import mongoosePaginate from 'mongoose-paginate-v2';
 
 export enum Verdict {
   PENDING,
@@ -54,9 +55,11 @@ const submissionSchema = new mongoose.Schema({
   }
 });
 
+submissionSchema.plugin(mongoosePaginate);
+
 export const Submission = mongoose.model("Submission", submissionSchema);
 
-export function validateSubmission(submission: any){
+export function validateSubmission(submission: any) {
   const schema = {
     problem: Joi.string().required().min(1),
     user: Joi.string().required().min(1),
