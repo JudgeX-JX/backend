@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import Joi from "joi";
 import { enumToArray } from '../utils/enumToArray';
 
-enum difficulty {
+export enum Difficulty {
   EASY,
   MEDIUM,
   HARD
@@ -32,7 +32,8 @@ const problemSchema = new mongoose.Schema({
   },
   difficulty: {
     type: String,
-    required: true
+    required: true,
+    enum: [...enumToArray(Difficulty)]
   }
 });
 
@@ -44,6 +45,6 @@ export function validateProblem(problem: any) {
     timeLimit: Joi.number().required().min(1).max(10),
     memoryLimit: Joi.number().required().min(5).max(500),
     tags: Joi.array(),
-    difficulty: Joi.string().required().valid([...enumToArray(difficulty)])
+    difficulty: Joi.string().required().valid([...enumToArray(Difficulty)])
   }
 }
