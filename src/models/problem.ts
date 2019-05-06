@@ -63,7 +63,6 @@ export const Problem = mongoose.model("Problem", problemSchema);
 export function validateProblem(problem: any) {
   const schema = {
     name: Joi.string().required().min(1).max(50),
-    setter: Joi.string().required().min(1),
     description: Joi.string().required().min(10),
     inputs: Joi.array().required(),
     outputs: Joi.array().required().length(problem.inputs.length),
