@@ -21,8 +21,8 @@ const contestSchema = new mongoose.Schema({
   },
   registeredUsers: {
     type: [mongoose.Schema.Types.ObjectId],
-    required: true,
-    ref: "User"
+    ref: "User",
+    default: []
   },
   startDate: {
     type: Date,
@@ -42,15 +42,14 @@ contestSchema.plugin(mongoosePaginate);
 
 export const Contest = mongoose.model("Contest", contestSchema);
 
-export function validateContest(contest: any){
-  const schma = {
+export function validateContest(contest: any) {
+  const schema = {
     name: Joi.string().required().min(1).max(50),
-    setter: Joi.string().required().min(1),
     problems: Joi.array().required().min(1).items(Joi.string()),
-    registeredUsers: Joi.array().required().min(1).items(Joi.string()),
     startDate: Joi.date().required().min(Date.now()),
     duration: Joi.number().required().min(1),
     password: Joi.string().min(1)
   }
+  return Joi.validate(contest, schema);
 }
 
