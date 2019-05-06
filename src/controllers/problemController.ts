@@ -1,23 +1,24 @@
 import { Problem, validateProblem } from '../models/problem';
+import { Request, Response } from 'express';
 
-// CRUD operations for a problem
+// CRUD operations
 
-export function getProblems(req: any, res: any) {
-
-}
-
-export function getProblemWithId(req: any, res: any) {
+export function getAll(req: Request, res: Response) {
 
 }
 
-export function createProblem(req: any, res: any) {
+export function getWithId(req: Request, res: Response) {
 
 }
 
-export function updateProblem(req: any, res: any) {
+export function create(req: Request, res: Response) {
 
 }
 
-export function deleteProblem(req: any, res: any) {
+export function updateWithId(req: Request, res: Response) {
+
+}
+
+export function deleteWithId(req: Request, res: Response) {
 
 }
