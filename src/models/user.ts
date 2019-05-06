@@ -2,11 +2,12 @@ import mongoose from 'mongoose';
 import Joi from 'joi';
 import jwt from 'jsonwebtoken';
 import config from 'config';
+import { enumToArray } from '../utils/enumToArray';
 
-export enum roles {
-  ADMIN = "ADMIN",
-  PROBLEM_SETTER = "PROBLEM_SETTER",
-  USER = "USER"
+export enum Roles {
+  ADMIN,
+  PROBLEM_SETTER,
+  USER
 }
 
 const userSchema = new mongoose.Schema({
@@ -28,8 +29,9 @@ const userSchema = new mongoose.Schema({
     required: true
   },
   role: {
-    type: roles,
-    default: roles.USER
+    type: String,
+    default: Roles[Roles.USER],
+    enum: [...enumToArray(Roles)]
   }
 });
 
@@ -37,6 +39,8 @@ userSchema.methods.generateAuthToken = function () {
   const token = jwt.sign({ _id: this._id }, config.get('jwtPrivateKey'));
   return token;
 }
+
+export const User = mongoose.model("User", userSchema);
 
 export function validateUser(user: any) {
   const schema = {
@@ -47,5 +51,3 @@ export function validateUser(user: any) {
 
   return Joi.validate(user, schema);
 }
-
-export const User = mongoose.model("User", userSchema);
