@@ -1,10 +1,11 @@
 import { User, validateUser } from "../models/user";
+import { Request, Response } from 'express';
 import _ from 'lodash';
 import bcrypt from 'bcryptjs';
 import Joi from 'joi';
 
 
-export async function signin(req: any, res: any) {
+export async function signin(req: Request, res: Response) {
   const {
     error
   } = validateSignin(req.body);
@@ -32,7 +33,7 @@ export async function signin(req: any, res: any) {
 
 }
 
-export async function signup(req: any, res: any) {
+export async function signup(req: Request, res: Response) {
   const {
     error
   } = validateUser(req.body);
