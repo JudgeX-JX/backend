@@ -56,7 +56,7 @@ export async function signup(req: Request, res: Response) {
 
   sendVerificationEmail(user.verificationToken, user.email, req.headers.host)
     .catch((err) => {
-      console.log(colors.bgRed(`Email was NOT sent to ${user.email}!`))
+      console.log(colors.bgRed(`Email was NOT sent to ${user.email}!, ${err}`))
     });
 
 
@@ -81,7 +81,7 @@ function sendVerificationEmail(verificationToken: string, recieverEmail: string,
   }
 
   let transporter = nodemailer.createTransport({
-    service: 'Gmaile',
+    service: 'Gmail',
     auth: {
       user: sender.email,
       pass: sender.password
