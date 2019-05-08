@@ -6,6 +6,7 @@ import problems from './routes/problems';
 import contests from './routes/contests';
 import submissions from './routes/submissions';
 import { connectToMongo } from './utils/connectToMongo';
+import router from './routes/verify';
 
 connectToMongo();
 
@@ -22,6 +23,7 @@ app.use('/signup', signup);
 app.use('/problems', problems);
 app.use('/contests', contests);
 app.use('/submissions', submissions);
+app.use('/verify', router);
 
 //The 404 Route (ALWAYS Keep this as the last route)
 app.get('*', function (req, res) {
