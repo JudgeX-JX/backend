@@ -50,7 +50,7 @@ export function updateWithId(req: Request | any, res: Response) {
   const problemId = req.params.id;
   const userId = req.user._id;
 
-  Problem.findById(problemId).then((problem) => {
+  Problem.findById(problemId).then(async (problem) => {
 
     if (problem.setter.toString() !== userId.toString())
       return res.status(403).json({ message: "You are not allowed" });
@@ -64,7 +64,11 @@ export function updateWithId(req: Request | any, res: Response) {
     const { error } = validateProblem(req.body);
     if (error) return res.status(422).json({ message: error.details[0].message });
 
+    for (let prop in req.body)
+      problem.markModified(prop); // To fix non-changing array of inputs or outputs
+
     _.merge(problem, req.body);
+
     problem.save();
 
     res.send(problem);
