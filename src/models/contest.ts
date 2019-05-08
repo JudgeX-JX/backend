@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import Joi from "joi";
 import mongoosePaginate from 'mongoose-paginate-v2';
+import { Problem } from "./problem";
 
 const contestSchema = new mongoose.Schema({
   name: {
@@ -41,6 +42,18 @@ const contestSchema = new mongoose.Schema({
 contestSchema.plugin(mongoosePaginate);
 
 export const Contest = mongoose.model("Contest", contestSchema);
+
+export async function validateProblems(problems: string[]) {
+  for (const problem of problems) {
+
+    const res = await Problem.findById(problem)
+      .then(() => true)
+      .catch(() => false);
+
+    if (!res) return res;
+  }
+  return true;
+}
 
 export function validateContest(contest: any) {
   const schema = {
