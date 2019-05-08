@@ -3,6 +3,9 @@ import { Request, Response } from 'express';
 import _ from 'lodash';
 import bcrypt from 'bcryptjs';
 import Joi from 'joi';
+import nodemailer from 'nodemailer';
+import config from 'config';
+import colors from 'colors/safe';
 
 
 export async function signin(req: Request, res: Response) {
@@ -49,6 +52,14 @@ export async function signup(req: Request, res: Response) {
 
   const user: any = new User(_.pick(req.body, ['name', 'email', 'password']));
 
+  user.generateEmailVerificationToken();
+
+  sendVerificationEmail(user.verificationToken, user.email, req.headers.host)
+    .catch((err) => {
+      console.log(colors.bgRed(`Email was NOT sent to ${user.email}!`))
+    });
+
+
   const salt = await bcrypt.genSalt(10);
   user.password = await bcrypt.hash(user.password, salt);
   user.save();
@@ -58,6 +69,36 @@ export async function signup(req: Request, res: Response) {
     .json(_.pick(user, ['name', 'email', 'role']));
 }
 
+
+function sendVerificationEmail(verificationToken: string, recieverEmail: string, host: string | undefined) {
+  const sender: { email: string, password: string } = {
+    email: config.get('mail.mail'),
+    password: config.get('mail.password')
+  };
+
+  if (!sender.email || !sender.password) {
+    console.log(colors.yellow("Undefined Email | password"))
+  }
+
+  let transporter = nodemailer.createTransport({
+    service: 'Gmaile',
+    auth: {
+      user: sender.email,
+      pass: sender.password
+    }
+  });
+
+  const verfificationLink = 'http:\/\/' + host + '\/verify\/' + verificationToken + '';
+
+  return transporter.sendMail({
+    from: `"CodeCoursez" <${sender.email}>`, // sender address
+    to: recieverEmail,
+    subject: "Verify Your Email", // Subject
+    html: "Please use the following link to verify your Email: <a href='" + verfificationLink + "'>here</a>.",
+  });
+
+
+}
 
 function validateSignin(user: any) {
   const schema = {
