@@ -1,4 +1,8 @@
 {
     "mongoUrl": "codecoursez_mongoUrl",
-    "jwtPrivateKey": "codecoursez_jwtPrivateKey"
+    "jwtPrivateKey": "codecoursez_jwtPrivateKey",
+    "mail": {
+      "mail": "codecoursez_email",
+      "password": "codecoursez_emailPassword"
+    }
 }
