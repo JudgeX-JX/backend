@@ -48,8 +48,8 @@ export function validateContest(contest: any) {
     problems: Joi.array().required().min(1).items(Joi.string()),
     startDate: Joi.date().required().min(Date.now()),
     duration: Joi.number().required().min(1),
-    password: Joi.string().min(1)
-  }
+    password: Joi.string().min(1).allow(null)
+  };
   return Joi.validate(contest, schema);
 }
 
