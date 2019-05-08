@@ -15,16 +15,14 @@ const contestSchema = new mongoose.Schema({
     required: true,
     ref: "User"
   },
-  problems: {
-    type: [mongoose.Schema.Types.ObjectId],
-    required: true,
-    ref: "Problem"
-  },
-  registeredUsers: {
-    type: [mongoose.Schema.Types.ObjectId],
+  problems: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Problem",
+  }],
+  registeredUsers: [{
+    type: mongoose.Schema.Types.ObjectId,
     ref: "User",
-    default: []
-  },
+  }],
   startDate: {
     type: Date,
     required: true,
