@@ -29,6 +29,8 @@ export function getWithId(req: Request, res: Response) {
     path: "setter problems",
     select: "name"
   }).then((result) => {
+    if (!result)
+      return res.status(404).json({ message: "No contest with the specified id: " + contestId })
     res.send(result);
   }).catch((error) => {
     res.status(404).send(error);
