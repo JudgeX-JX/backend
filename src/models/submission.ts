@@ -62,7 +62,6 @@ export const Submission = mongoose.model("Submission", submissionSchema);
 export function validateSubmission(submission: any) {
   const schema = {
     problem: Joi.string().required().min(1),
-    user: Joi.string().required().min(1),
     sourceCode: Joi.string().required().min(1)
   };
   return Joi.validate(submission, schema);
