@@ -5,20 +5,13 @@ import mongoosePaginate from 'mongoose-paginate-v2';
 
 export enum Verdict {
   PENDING,
-  ACCEPTED,
-  TIME_LIMIT_EXCEEDED,
-  MEMORY_LIMIT_EXCEEDED,
+  ACCEPTED = 3,
   WRONG_ANSWER,
+  TIME_LIMIT_EXCEEDED,
+  COMPILATION_ERROR,
   RUNTIME_ERROR,
-  JUDGE_ERROR,
-
-  // Aliases
-
-  AC = ACCEPTED,
-  WA = WRONG_ANSWER,
-  TLE = TIME_LIMIT_EXCEEDED,
-  MLE = MEMORY_LIMIT_EXCEEDED,
-  RTE = RUNTIME_ERROR,
+  MEMORY_LIMIT_EXCEEDED,
+  JUDGE_ERROR = 13,
 }
 
 const submissionSchema = new mongoose.Schema({
