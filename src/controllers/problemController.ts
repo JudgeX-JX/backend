@@ -1,5 +1,6 @@
 import { Problem, validateProblem } from '../models/problem';
 import { Request, Response } from 'express';
+import _ from 'lodash';
 
 // CRUD operations
 
@@ -42,10 +43,50 @@ export function create(req: Request | any, res: Response) {
 
 }
 
-export function updateWithId(req: Request, res: Response) {
+export function updateWithId(req: Request | any, res: Response) {
+
+  const problemId = req.params.id;
+  const userId = req.user._id;
+
+  Problem.findById(problemId).then((problem) => {
+
+    if (problem.setter.toString() !== userId.toString())
+      return res.status(403).json({ message: "You are not allowed" });
+
+
+    req.body = {
+      ..._.pick(problem, ['name', 'description', 'inputs', 'outputs', 'timeLimit', 'memoryLimit', 'tags', 'difficulty']),
+      ...req.body
+    };
+
+    const { error } = validateProblem(req.body);
+    if (error) return res.status(422).json({ message: error.details[0].message });
+
+    _.merge(problem, req.body);
+    problem.save();
+
+    res.send(problem);
+
+  }).catch((err) => res.status(404).json(err));
 
 }
 
-export function deleteWithId(req: Request, res: Response) {
+export function deleteWithId(req: Request | any, res: Response) {
+  const problemId = req.params.id;
+  const userId = req.user._id;
 
+  Problem.findById(problemId)
+    .then((problem) => {
+
+      if (problem.setter.toString() !== userId.toString())
+        return res.status(403).json({ message: "You are not allowed" });
+
+      problem.delete();
+      res.send(problem);
+    })
+    .catch((err) =>
+      res.status(404).json({
+        message: "No problem with the specified id: " + problemId
+      })
+    );
 }
