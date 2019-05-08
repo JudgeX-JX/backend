@@ -1,4 +1,8 @@
 {
     "mongoUrl": "mongodb://localhost/codecoursez",
-    "jwtPrivateKey": "codecoursez-secretkey"
+    "jwtPrivateKey": "codecoursez-secretkey",
+    "mail": {
+      "mail": "",
+      "password": ""
+    }
 }
