@@ -11,7 +11,6 @@ export function connectToMongo() {
 
   mongoose
     .connect(mongoUrl, { useNewUrlParser: true })
-    .then(() => console.log("connected to " + mongoUrl))
-    .catch(err => console.log("Error: ", err));
-
+    .then(() => console.log('connected to ' + mongoUrl))
+    .catch(err => console.log('Error: ', err));
 }

@@ -26,7 +26,7 @@ app.use('/submissions', submissions);
 app.use('/verify', router);
 
 //The 404 Route (ALWAYS Keep this as the last route)
-app.get('*', function (req, res) {
+app.get('*', function(req, res) {
   res.status(404).json({ message: 'Are you lost?!' });
 });
 
@@ -34,5 +34,3 @@ const port = process.env.PORT || 5000;
 app.listen(port, () => {
   console.log('listening on port ' + port);
 });
-
-
