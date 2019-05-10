@@ -56,25 +56,14 @@ export async function validateProblems(problems: string[]) {
   return true;
 }
 
+// prettier-ignore
 export function validateContest(contest: any) {
   const schema = {
-    name: Joi.string()
-      .required()
-      .min(1)
-      .max(50),
-    problems: Joi.array()
-      .required()
-      .min(1)
-      .items(Joi.string()),
-    startDate: Joi.date()
-      .required()
-      .min(Date.now()),
-    duration: Joi.number()
-      .required()
-      .min(1),
-    password: Joi.string()
-      .min(1)
-      .allow(null)
+    name: Joi.string().required().min(1).max(50),
+    problems: Joi.array().required().min(1).items(Joi.string()),
+    startDate: Joi.date().required().min(Date.now()),
+    duration: Joi.number().required().min(1),
+    password: Joi.string().min(1).allow(null)
   };
   return Joi.validate(contest, schema);
 }

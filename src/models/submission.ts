@@ -52,14 +52,11 @@ submissionSchema.plugin(mongoosePaginate);
 
 export const Submission = mongoose.model('Submission', submissionSchema);
 
+// prettier-ignore
 export function validateSubmission(submission: any) {
   const schema = {
-    problem: Joi.string()
-      .required()
-      .min(1),
-    sourceCode: Joi.string()
-      .required()
-      .min(1)
+    problem: Joi.string().required().min(1),
+    sourceCode: Joi.string().required().min(1)
   };
   return Joi.validate(submission, schema);
 }

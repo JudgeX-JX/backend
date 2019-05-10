@@ -60,21 +60,12 @@ userSchema.methods.generateAuthToken = function() {
 
 export const User = mongoose.model('User', userSchema);
 
+// prettier-ignore
 export function validateUser(user: any) {
   const schema = {
-    name: Joi.string()
-      .min(3)
-      .max(50)
-      .required(),
-    email: Joi.string()
-      .min(3)
-      .max(50)
-      .required()
-      .email(),
-    password: Joi.string()
-      .min(6)
-      .max(50)
-      .required()
+    name: Joi.string().min(3).max(50).required(),
+    email: Joi.string().min(3).max(50).required().email(),
+    password: Joi.string().min(6).max(50).required()
   };
 
   return Joi.validate(user, schema);

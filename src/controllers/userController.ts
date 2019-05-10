@@ -105,17 +105,11 @@ function sendVerificationEmail(
   });
 }
 
+// prettier-ignore
 function validateSignin(user: any) {
   const schema = {
-    email: Joi.string()
-      .email()
-      .required()
-      .min(3)
-      .max(50),
-    password: Joi.string()
-      .required()
-      .min(6)
-      .max(50)
+    email: Joi.string().email().required().min(3).max(50),
+    password: Joi.string().required().min(6).max(50)
   };
   return Joi.validate(user, schema);
 }
