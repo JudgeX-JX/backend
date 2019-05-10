@@ -12,7 +12,7 @@ router.get('/:id', contestController.getWithId);
 router.use(authenticate);
 router.use(authorize([Roles.ADMIN]));
 
-router.post('/',  contestController.create);
+router.post('/', contestController.create);
 router.put('/:id', contestController.updateWithId);
 router.delete('/:id', contestController.deleteWithId);
 
