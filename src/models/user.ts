@@ -1,7 +1,6 @@
 import mongoose from 'mongoose';
 import Joi from 'joi';
 import jwt from 'jsonwebtoken';
-import config from 'config';
 import crypto from 'crypto';
 import { enumToArray } from '../utils/enumToArray';
 
@@ -53,7 +52,7 @@ userSchema.methods.generateEmailVerificationToken = function() {
 userSchema.methods.generateAuthToken = function() {
   const token = jwt.sign(
     { _id: this._id, role: this.role },
-    config.get('jwtPrivateKey')
+    process.env.JWT_SECRET_KEY || ''
   );
   return token;
 };

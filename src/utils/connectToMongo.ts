@@ -1,8 +1,7 @@
-import config from 'config';
 import mongoose from 'mongoose';
 
 export function connectToMongo() {
-  const mongoUrl: string = config.get('mongoUrl');
+  const mongoUrl: string = process.env.MONGODB_URL || '';
 
   if (!mongoUrl) {
     process.exit(1);

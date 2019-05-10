@@ -1,6 +1,5 @@
 import jwt from 'jsonwebtoken';
 import { Response, NextFunction } from 'express';
-import config from 'config';
 
 export async function authenticate(
   req: any,
@@ -15,7 +14,7 @@ export async function authenticate(
       .json({ message: 'Access denied! No token provided.' });
 
   try {
-    req.user = await jwt.verify(token, config.get('jwtPrivateKey'));
+    req.user = await jwt.verify(token, process.env.JWT_SECRET_KEY || '');
     next();
   } catch (error) {
     return res.status(400).send(error.message);

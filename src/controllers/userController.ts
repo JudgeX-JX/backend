@@ -4,7 +4,6 @@ import _ from 'lodash';
 import bcrypt from 'bcryptjs';
 import Joi from 'joi';
 import nodemailer from 'nodemailer';
-import config from 'config';
 import colors from 'colors/safe';
 
 export async function signin(req: Request, res: Response) {
@@ -75,8 +74,8 @@ function sendVerificationEmail(
   host: string | undefined
 ) {
   const sender: { email: string; password: string } = {
-    email: config.get('mail.mail'),
-    password: config.get('mail.password')
+    email: process.env.EMAIL || '',
+    password: process.env.EMAIL_PASSWORD || ''
   };
 
   if (!sender.email || !sender.password) {
