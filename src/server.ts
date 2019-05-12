@@ -2,33 +2,13 @@ import { Server } from 'http';
 import clrs from 'colors';
 import express from 'express';
 import helmet from 'helmet';
-
-import signin from './routes/signin';
-import signup from './routes/signup';
-import problems from './routes/problems';
-import contests from './routes/contests';
-import submissions from './routes/submissions';
-import verify from './routes/verify';
+import routes from './routes';
 
 const app = express();
-
-// Middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(helmet());
-
-// Routes
-app.use('/signin', signin);
-app.use('/signup', signup);
-app.use('/problems', problems);
-app.use('/contests', contests);
-app.use('/submissions', submissions);
-app.use('/verify', verify);
-
-//The 404 Route (ALWAYS Keep this as the last route)
-app.get('*', function(req, res) {
-  res.status(404).json({ message: 'Are you lost?!' });
-});
+app.use(routes);
 
 export async function run() {
   return new Promise<Server>((resolve, reject) => {
