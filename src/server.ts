@@ -4,6 +4,7 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
+import bearerToken from 'express-bearer-token';
 import routes from './routes';
 
 const app = express();
@@ -20,6 +21,7 @@ app.use(express.json({ limit: '5mb' }));
 app.use(express.urlencoded({ limit: '5mb', extended: true }));
 app.use(cors());
 app.use(helmet());
+app.use(bearerToken());
 app.use(routes);
 
 export async function run() {

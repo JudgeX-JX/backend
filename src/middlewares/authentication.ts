@@ -6,7 +6,7 @@ export async function authenticate(
   res: Response,
   next: NextFunction
 ) {
-  const token = req.header('x-auth-token');
+  const token = req.token;
 
   if (!token)
     return res

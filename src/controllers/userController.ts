@@ -29,9 +29,10 @@ export async function signin(req: Request, res: Response) {
       message: 'Invalid email or password!'
     });
 
-  res
-    .header('x-auth-token', user.generateAuthToken())
-    .json(_.pick(user, ['name', 'email', 'role']));
+  res.json({
+    token: user.generateAuthToken(),
+    ..._.pick(user, ['name', 'email', 'role'])
+  });
 }
 
 export async function signup(req: Request, res: Response) {
@@ -63,9 +64,10 @@ export async function signup(req: Request, res: Response) {
   user.password = await bcrypt.hash(user.password, salt);
   user.save();
 
-  res
-    .header('x-auth-token', user.generateAuthToken())
-    .json(_.pick(user, ['name', 'email', 'role']));
+  res.json({
+    token: user.generateAuthToken(),
+    ..._.pick(user, ['name', 'email', 'role'])
+  });
 }
 
 function sendVerificationEmail(
