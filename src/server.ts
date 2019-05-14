@@ -5,6 +5,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import bearerToken from 'express-bearer-token';
+import { errorHandler } from './middlewares';
 import routes from './routes';
 
 const app = express();
@@ -23,6 +24,7 @@ app.use(cors());
 app.use(helmet());
 app.use(bearerToken());
 app.use(routes);
+app.use(errorHandler);
 
 export async function run() {
   return new Promise<http.Server>((resolve, reject) => {
