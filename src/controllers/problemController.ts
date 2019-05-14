@@ -9,8 +9,8 @@ export function getAll(req: Request, res: Response) {
     page: parseInt(req.query.pageNumber) || 1,
     limit: parseInt(req.query.pageSize) || 10,
     populate: {
-      path: "setter",
-      select: "name"
+      path: 'setter',
+      select: 'name'
     },
     customLabels: {
       docs: 'problems'
@@ -25,13 +25,17 @@ export function getAll(req: Request, res: Response) {
 export function getWithId(req: Request, res: Response) {
   const problemId = req.params.id;
 
-  Problem.findById(problemId).then((result) => {
-    if (!result)
-      return res.status(404).json({ message: "No problem with the specified id: " + problemId })
-    res.send(result);
-  }).catch((error) => {
-    res.status(404).send(error);
-  });
+  Problem.findById(problemId)
+    .then(result => {
+      if (!result)
+        return res
+          .status(404)
+          .json({ message: 'No problem with the specified id: ' + problemId });
+      res.send(result);
+    })
+    .catch(error => {
+      res.status(404).send(error);
+    });
 }
 
 export function create(req: Request | any, res: Response) {
@@ -42,39 +46,44 @@ export function create(req: Request | any, res: Response) {
   problem.setter = req.user._id;
   problem.save();
   res.send(problem);
-
 }
 
 export function updateWithId(req: Request | any, res: Response) {
-
   const problemId = req.params.id;
   const userId = req.user._id;
 
-  Problem.findById(problemId).then(async (problem) => {
+  Problem.findById(problemId)
+    .then(async problem => {
+      if (problem.setter.toString() !== userId.toString())
+        return res.status(403).json({ message: 'You are not allowed' });
 
-    if (problem.setter.toString() !== userId.toString())
-      return res.status(403).json({ message: "You are not allowed" });
+      req.body = {
+        ..._.pick(problem, [
+          'name',
+          'description',
+          'inputs',
+          'outputs',
+          'timeLimit',
+          'memoryLimit',
+          'tags',
+          'difficulty'
+        ]),
+        ...req.body
+      };
 
+      const { error } = validateProblem(req.body);
+      if (error)
+        return res.status(422).json({ message: error.details[0].message });
 
-    req.body = {
-      ..._.pick(problem, ['name', 'description', 'inputs', 'outputs', 'timeLimit', 'memoryLimit', 'tags', 'difficulty']),
-      ...req.body
-    };
+      for (let prop in req.body) problem.markModified(prop); // To fix non-changing array of inputs or outputs
 
-    const { error } = validateProblem(req.body);
-    if (error) return res.status(422).json({ message: error.details[0].message });
+      _.merge(problem, req.body);
 
-    for (let prop in req.body)
-      problem.markModified(prop); // To fix non-changing array of inputs or outputs
+      problem.save();
 
-    _.merge(problem, req.body);
-
-    problem.save();
-
-    res.send(problem);
-
-  }).catch((err) => res.status(404).json(err));
-
+      res.send(problem);
+    })
+    .catch(err => res.status(404).json(err));
 }
 
 export function deleteWithId(req: Request | any, res: Response) {
@@ -82,17 +91,16 @@ export function deleteWithId(req: Request | any, res: Response) {
   const userId = req.user._id;
 
   Problem.findById(problemId)
-    .then((problem) => {
-
+    .then(problem => {
       if (problem.setter.toString() !== userId.toString())
-        return res.status(403).json({ message: "You are not allowed" });
+        return res.status(403).json({ message: 'You are not allowed' });
 
       problem.delete();
       res.send(problem);
     })
-    .catch((err) =>
+    .catch(err =>
       res.status(404).json({
-        message: "No problem with the specified id: " + problemId
+        message: 'No problem with the specified id: ' + problemId
       })
     );
 }

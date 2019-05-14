@@ -1,5 +1,5 @@
-import mongoose from "mongoose";
-import Joi from "joi";
+import mongoose from 'mongoose';
+import Joi from 'joi';
 import { enumToArray } from '../utils/enumToArray';
 import mongoosePaginate from 'mongoose-paginate-v2';
 
@@ -11,18 +11,18 @@ export enum Verdict {
   COMPILATION_ERROR,
   RUNTIME_ERROR,
   MEMORY_LIMIT_EXCEEDED,
-  JUDGE_ERROR = 13,
+  JUDGE_ERROR = 13
 }
 
 const submissionSchema = new mongoose.Schema({
   problem: {
     type: mongoose.Types.ObjectId,
-    ref: "Problem",
+    ref: 'Problem',
     required: true
   },
   user: {
     type: mongoose.Types.ObjectId,
-    ref: "User",
+    ref: 'User',
     required: true
   },
   sourceCode: {
@@ -50,8 +50,9 @@ const submissionSchema = new mongoose.Schema({
 
 submissionSchema.plugin(mongoosePaginate);
 
-export const Submission = mongoose.model("Submission", submissionSchema);
+export const Submission = mongoose.model('Submission', submissionSchema);
 
+// prettier-ignore
 export function validateSubmission(submission: any) {
   const schema = {
     problem: Joi.string().required().min(1),
@@ -59,6 +60,3 @@ export function validateSubmission(submission: any) {
   };
   return Joi.validate(submission, schema);
 }
-
-
-

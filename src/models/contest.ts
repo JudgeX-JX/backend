@@ -1,7 +1,7 @@
-import mongoose from "mongoose";
-import Joi from "joi";
+import mongoose from 'mongoose';
+import Joi from 'joi';
 import mongoosePaginate from 'mongoose-paginate-v2';
-import { Problem } from "./problem";
+import { Problem } from './problem';
 
 const contestSchema = new mongoose.Schema({
   name: {
@@ -13,19 +13,23 @@ const contestSchema = new mongoose.Schema({
   setter: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
-    ref: "User"
+    ref: 'User'
   },
-  problems: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Problem",
-  }],
-  registeredUsers: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-  }],
+  problems: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Problem'
+    }
+  ],
+  registeredUsers: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User'
+    }
+  ],
   startDate: {
     type: Date,
-    required: true,
+    required: true
   },
   duration: {
     type: Number,
@@ -39,11 +43,10 @@ const contestSchema = new mongoose.Schema({
 
 contestSchema.plugin(mongoosePaginate);
 
-export const Contest = mongoose.model("Contest", contestSchema);
+export const Contest = mongoose.model('Contest', contestSchema);
 
 export async function validateProblems(problems: string[]) {
   for (const problem of problems) {
-
     const res = await Problem.findById(problem)
       .then(() => true)
       .catch(() => false);
@@ -53,6 +56,7 @@ export async function validateProblems(problems: string[]) {
   return true;
 }
 
+// prettier-ignore
 export function validateContest(contest: any) {
   const schema = {
     name: Joi.string().required().min(1).max(50),
@@ -63,4 +67,3 @@ export function validateContest(contest: any) {
   };
   return Joi.validate(contest, schema);
 }
-

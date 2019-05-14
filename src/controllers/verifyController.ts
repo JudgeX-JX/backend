@@ -7,17 +7,16 @@ export async function verify(req: Request, res: Response) {
     verificationToken: token
   });
 
-  if (!user) return res.status(400).send("Invalid token");
+  if (!user) return res.status(400).send('Invalid token');
 
   if (user.isVerified)
     return res.json({
-      message: "You email has been already verified!"
+      message: 'You email has been already verified!'
     });
 
   user.isVerified = true;
   user.save();
   res.json({
-    message: "You email has been verified successfully!"
+    message: 'You email has been verified successfully!'
   });
-
 }

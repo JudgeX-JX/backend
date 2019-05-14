@@ -1,7 +1,6 @@
 import mongoose from 'mongoose';
 import Joi from 'joi';
 import jwt from 'jsonwebtoken';
-import config from 'config';
 import crypto from 'crypto';
 import { enumToArray } from '../utils/enumToArray';
 
@@ -45,24 +44,27 @@ const userSchema = new mongoose.Schema({
   }
 });
 
-
-userSchema.methods.generateEmailVerificationToken = function () {
+userSchema.methods.generateEmailVerificationToken = function() {
   this.verificationToken = crypto.randomBytes(16).toString('hex');
   return this.verificationToken;
 };
 
-userSchema.methods.generateAuthToken = function () {
-  const token = jwt.sign({ _id: this._id, role: this.role }, config.get('jwtPrivateKey'));
+userSchema.methods.generateAuthToken = function() {
+  const token = jwt.sign(
+    { _id: this._id, role: this.role },
+    process.env.JWT_SECRET_KEY || ''
+  );
   return token;
-}
+};
 
-export const User = mongoose.model("User", userSchema);
+export const User = mongoose.model('User', userSchema);
 
+// prettier-ignore
 export function validateUser(user: any) {
   const schema = {
     name: Joi.string().min(3).max(50).required(),
     email: Joi.string().min(3).max(50).required().email(),
-    password: Joi.string().min(6).max(50).required(),
+    password: Joi.string().min(6).max(50).required()
   };
 
   return Joi.validate(user, schema);

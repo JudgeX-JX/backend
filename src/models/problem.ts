@@ -1,5 +1,5 @@
-import mongoose from "mongoose";
-import Joi from "joi";
+import mongoose from 'mongoose';
+import Joi from 'joi';
 import { enumToArray } from '../utils/enumToArray';
 import mongoosePaginate from 'mongoose-paginate-v2';
 
@@ -19,7 +19,7 @@ const problemSchema = new mongoose.Schema({
   setter: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
-    ref: "User"
+    ref: 'User'
   },
   description: {
     type: String,
@@ -52,14 +52,14 @@ const problemSchema = new mongoose.Schema({
     type: String,
     required: true,
     enum: [...enumToArray(Difficulty)]
-  },
-
+  }
 });
 
 problemSchema.plugin(mongoosePaginate);
 
-export const Problem = mongoose.model("Problem", problemSchema);
+export const Problem = mongoose.model('Problem', problemSchema);
 
+// prettier-ignore
 export function validateProblem(problem: any) {
   const schema = {
     name: Joi.string().required().min(1).max(50),
@@ -69,7 +69,7 @@ export function validateProblem(problem: any) {
     timeLimit: Joi.number().required().min(1).max(10),
     memoryLimit: Joi.number().required().min(5).max(500),
     tags: Joi.array(),
-    difficulty: Joi.string().required().valid([...enumToArray(Difficulty)]),
+    difficulty: Joi.string().required().valid([...enumToArray(Difficulty)])
   };
   return Joi.validate(problem, schema);
 }
