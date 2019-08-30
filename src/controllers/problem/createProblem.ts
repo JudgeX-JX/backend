@@ -17,7 +17,6 @@ export async function create(req: Request, res: Response): Promise<Response> {
     await problem.save();
     return APIResponse.Created(res, problem);
   } catch (err) {
-    console.error(err);
-    return APIResponse.UnprocessableEntity(res, err.message);
+    return APIResponse.ServerError(res, err);
   }
 }
