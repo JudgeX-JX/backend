@@ -30,16 +30,10 @@ export async function create(req: Request, res: Response): Promise<Response> {
     .execPopulate();
 
   if (!submission.contest) {
-    return APIResponse.UnprocessableEntity(
-      res,
-      noId(Contest, req.params.contestID),
-    );
+    return APIResponse.NotFound(res, noId(Contest, req.params.contestID));
   }
   if (!submission.problem) {
-    return APIResponse.UnprocessableEntity(
-      res,
-      noId(Problem, req.params.problemID),
-    );
+    return APIResponse.NotFound(res, noId(Problem, req.params.problemID));
   }
   // can submit?
   if (!BaseJudge.contestStarted(submission.contest)) {
@@ -49,10 +43,8 @@ export async function create(req: Request, res: Response): Promise<Response> {
     );
   }
 
-  const judge = new JudgeFactory(submission.problem).createJudge(submission);
-
   try {
-    judge.submit();
+    new JudgeFactory(submission.problem).createJudge(submission).submit();
   } catch (err) {
     console.error(err);
   }
