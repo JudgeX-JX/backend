@@ -1,5 +1,5 @@
 {
-  "name": "codecoursez-backend",
+  "name": "jx-api",
   "version": "1.0.0",
   "description": "",
   "main": "dist/index.js",
@@ -12,13 +12,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/codecoursez/backend.git"
+    "url": "git+https://github.com/JudgeX-JX/backend.git"
   },
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/codecoursez/backend/issues"
+    "url": "https://github.com/JudgeX-JX/backend/issues"
   },
-  "homepage": "https://github.com/codecoursez/backend#readme",
+  "homepage": "https://github.com/JudgeX-JX/backend#readme",
   "dependencies": {
     "@hapi/joi": "^17.1.1",
     "axios": "^0.19.2",

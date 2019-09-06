@@ -61,7 +61,7 @@ async function sendVerificationEmail(
     'http://' + host + '/verify/' + verificationToken + '';
 
   await transporter.sendMail({
-    from: `"CodeCoursez" <${sender.email}>`, // sender address
+    from: `"JudgeX" <${sender.email}>`, // sender address
     to: recieverEmail,
     subject: 'Verify Your Email', // Subject
     html:
