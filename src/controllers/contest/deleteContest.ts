@@ -14,8 +14,8 @@ export async function deleteWithId(
     select: 'name',
   });
   if (!contest) {
-    return APIResponse.Ok(res, noId(Contest, contestId));
+    return APIResponse.NotFound(res, noId(Contest, contestId));
   }
-  contest.remove();
+  await contest.remove();
   return APIResponse.Ok(res, contest);
 }
