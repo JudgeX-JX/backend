@@ -28,8 +28,7 @@ export class BaseJudge {
   isDuringContest(): boolean {
     const start = new Date(this.contest.startDate);
     const end = new Date();
-    end.setMinutes(start.getMinutes() + this.contest.duration);
-    // console.log(`Start: ${start}\nDuration: ${contest.duration}\nEnd: ${end}\nNow: ${new Date()}`)
+    end.setTime(start.getTime() + this.contest.duration * 60 * 1000);
     return new Date() < end && BaseJudge.contestStarted(this.contest);
   }
 
