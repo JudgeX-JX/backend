@@ -13,7 +13,6 @@ export async function create(req: Request, res: Response): Promise<Response> {
     if (problem.judge.type === 'CODEFORCES' && problem.judge.cfID) {
       const cfScrapper = new CodeforcesProblemScrapper();
       problem.description = await cfScrapper.parseProblem(problem.judge.cfID);
-      console.log(problem);
     }
     await problem.save();
     return APIResponse.Created(res, problem);
