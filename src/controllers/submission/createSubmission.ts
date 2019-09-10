@@ -29,16 +29,16 @@ export async function create(req: Request, res: Response): Promise<Response> {
     })
     .execPopulate();
 
-  if (!submission.problem) {
-    return APIResponse.UnprocessableEntity(
-      res,
-      noId(Problem, req.params.problemID),
-    );
-  }
   if (!submission.contest) {
     return APIResponse.UnprocessableEntity(
       res,
       noId(Contest, req.params.contestID),
+    );
+  }
+  if (!submission.problem) {
+    return APIResponse.UnprocessableEntity(
+      res,
+      noId(Problem, req.params.problemID),
     );
   }
   // can submit?
