@@ -1,4 +1,22 @@
 import mongoose from 'mongoose';
+import {IContest} from './contest';
+import {IUser} from './user';
+import {IProblem} from './problem';
+
+export interface IStanding extends mongoose.Document {
+  contest: IContest;
+  user: IUser;
+  problems: {
+    problem: IProblem;
+    isAccepted: boolean;
+    isFirstAccepted: boolean;
+    failedSubmissions: number;
+    totalSubmissions: number;
+    solvedAt: Date;
+  }[];
+  solved: number;
+  penality: number;
+}
 
 const standingSchema = new mongoose.Schema({
   contest: {
@@ -39,9 +57,8 @@ const standingSchema = new mongoose.Schema({
         default: 0,
       },
       solvedAt: {
-        type: Number,
-        // required: true,
-        default: null,
+        type: Date,
+        required: true,
       },
     },
   ],
@@ -57,4 +74,4 @@ const standingSchema = new mongoose.Schema({
   },
 });
 
-export const Standing = mongoose.model('Standing', standingSchema);
+export const Standing = mongoose.model<IStanding>('Standing', standingSchema);
