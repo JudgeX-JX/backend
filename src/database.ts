@@ -15,6 +15,7 @@ export async function connect(): Promise<void> {
       useUnifiedTopology: true,
       useNewUrlParser: true,
       useCreateIndex: true,
+      useFindAndModify: false,
     });
 
     console.info(
