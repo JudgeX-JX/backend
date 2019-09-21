@@ -1,5 +1,6 @@
 import {User, Roles} from './models/user';
 import bcrypt from 'bcryptjs';
+import {yellow, green} from 'colors/safe';
 
 export default async (): Promise<void> => {
   // In a separate variable because findOne doesn't need password
@@ -21,4 +22,5 @@ export default async (): Promise<void> => {
   } else {
     await new User({...admin, password}).save();
   }
+  console.log(green(`Admin is ${yellow(admin.email)}`));
 };
