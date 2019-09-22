@@ -1,13 +1,23 @@
 import mongoose from 'mongoose';
-import Joi from 'joi';
+import Joi from '@hapi/joi';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 import { enumToArray } from '../utils/enumToArray';
+import { IDecodedToken } from '../middlewares';
 
 export enum Roles {
   ADMIN,
   PROBLEM_SETTER,
   USER
+}
+
+export interface IUser extends mongoose.Document {
+  name: string;
+  email: string;
+  password: string;
+  role: string;
+  isVerified: boolean;
+  verificationToken: string;
 }
 
 const userSchema = new mongoose.Schema({
@@ -44,28 +54,31 @@ const userSchema = new mongoose.Schema({
   }
 });
 
-userSchema.methods.generateEmailVerificationToken = function () {
+userSchema.methods.generateEmailVerificationToken = function (): string {
   this.verificationToken = crypto.randomBytes(16).toString('hex');
   return this.verificationToken;
 };
 
-userSchema.methods.generateAuthToken = function () {
-  const token = jwt.sign(
-    { _id: this._id, role: this.role },
+userSchema.methods.generateAuthToken = function (): string {
+  const token: IDecodedToken = {
+    role: this.role,
+    _id: this._id
+  }
+  return jwt.sign(
+    token,
     process.env.JWT_SECRET_KEY || ''
   );
-  return token;
 };
 
-export const User = mongoose.model('User', userSchema);
+export const User = mongoose.model<IUser>('User', userSchema);
 
 // prettier-ignore
-export function validateUser(user: any) {
-  const schema = {
+export function validateUser(user: {}): Joi.ValidationResult {
+  const schema = Joi.object({
     name: Joi.string().min(3).max(50).required(),
     email: Joi.string().min(3).max(50).required().email(),
     password: Joi.string().min(6).max(50).required()
-  };
+  });
 
-  return Joi.validate(user, schema);
+  return schema.validate(user);
 }

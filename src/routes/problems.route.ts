@@ -12,7 +12,7 @@ router.use(authenticate);
 router.get('/', problemController.getAll);
 router.get('/:id', problemController.getWithId);
 
-router.use(authorize([Roles.PROBLEM_SETTER, Roles.ADMIN]));
+router.use(authorize([Roles.ADMIN]));
 
 router.post('/', problemController.create);
 router.put('/:id', problemController.updateWithId);

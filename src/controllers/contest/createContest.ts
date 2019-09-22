@@ -1,18 +1,18 @@
-import { Contest, validateContest, validateProblems } from '../../models/contest';
+import { Contest, validateContest, validProblemIDs } from '../../models/contest';
 import { Request, Response } from 'express';
-import _ from 'lodash';
 import APIResponse from '../../utils/APIResponse';
+import { IAuthenticatedRequest } from '../../middlewares';
 
-export async function create(req: Request | any, res: Response) {
+export async function create(req: Request, res: Response) {
   const { error } = validateContest(req.body);
-  if (error)
-    return APIResponse.UnprocessableEntity(res, error.message);
+  if (error) { return APIResponse.UnprocessableEntity(res, error.message); }
 
-  if (!await validateProblems(req.body.problems))
+  if (!await validProblemIDs(req.body.problems)) {
     return APIResponse.UnprocessableEntity(res, 'Invalid problem id');
+  }
 
   const contest = new Contest(req.body);
-  contest.setter = req.user._id;
+  contest.setter = (req as IAuthenticatedRequest).authenticatedUser._id;
   contest.save();
   res.send(contest);
 }

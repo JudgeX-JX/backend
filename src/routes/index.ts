@@ -16,8 +16,7 @@ router.use('/verify', verify);
 router.use('/standings', standing)
 
 // 404
-router.all('*', function (_, res) {
-  res.status(404).json({ message: '🤔 Are you lost ?!' });
-});
+router.all('*', (_, res) => res.status(404).json({ message: '🤔 Are you lost ?!' }));
+
 
 export default router;

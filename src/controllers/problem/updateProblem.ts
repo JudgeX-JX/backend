@@ -1,41 +1,37 @@
 import { Problem, validateProblem } from '../../models/problem';
 import { Request, Response } from 'express';
 import _ from 'lodash';
+import APIResponse from '../../utils/APIResponse';
 
-export function updateWithId(req: Request | any, res: Response) {
-    const problemId = req.params.id;
-    const userId = req.user._id;
+export async function updateWithId(req: Request, res: Response): Promise<Response> {
+  const problemId = req.params.id;
 
-    Problem.findById(problemId)
-        .then(async problem => {
-            if (problem.setter.toString() !== userId.toString())
-                return res.status(403).json({ message: 'You are not allowed' });
+  const problem = await Problem.findById(problemId);
 
-            req.body = {
-                ..._.pick(problem, [
-                    'name',
-                    'description',
-                    'inputs',
-                    'outputs',
-                    'timeLimit',
-                    'memoryLimit',
-                    'tags',
-                    'difficulty'
-                ]),
-                ...req.body
-            };
+  if (!problem) {
+    return APIResponse.NotFound(res, `No problem with id ${problemId}`)
+  }
+  req.body = {
+    ..._.pick(problem, [
+      'name',
+      'description',
+      'inputs',
+      'outputs',
+      'timeLimit',
+      'memoryLimit',
+      'tags',
+      'difficulty'
+    ]),
+    ...req.body
+  };
 
-            const { error } = validateProblem(req.body);
-            if (error)
-                return res.status(422).json({ message: error.details[0].message });
+  const { error } = validateProblem(req.body);
+  if (error) { return res.status(422).json({ message: error.details[0].message }); }
 
-            for (let prop in req.body) problem.markModified(prop); // To fix non-changing array of inputs or outputs
+  _.merge(problem, req.body);
 
-            _.merge(problem, req.body);
+  problem.save();
 
-            problem.save();
+  return APIResponse.Ok(res, problem);
 
-            res.send(problem);
-        })
-        .catch(err => res.status(404).json(err));
 }

@@ -1,7 +1,17 @@
 import mongoose from 'mongoose';
-import Joi from 'joi';
+import Joi from '@hapi/joi';
 import mongoosePaginate from 'mongoose-paginate-v2';
 import { Problem } from './problem';
+
+export interface IContest extends mongoose.Document {
+  name: string;
+  setter: string;
+  problems: [string];
+  registeredUsers: [string];
+  startDate: Date;
+  duration: number;
+  password?: string;
+}
 
 const contestSchema = new mongoose.Schema({
   name: {
@@ -43,29 +53,27 @@ const contestSchema = new mongoose.Schema({
 
 contestSchema.plugin(mongoosePaginate);
 
-export const Contest = mongoose.model('Contest', contestSchema);
+export const Contest = mongoose.model<IContest>('Contest', contestSchema);
 
-export async function validateProblems(problems: string[]) {
-  for (const problem of problems) {
-    try {
-      const res = await Problem.findById(problem);
-      if (!res) return false;
-    } catch (err) {
-      console.log(err);
-      return false;
-    }
+export async function validProblemIDs(problems: string[]): Promise<boolean> {
+  try {
+    return await Problem.exists({
+      $all: problems
+    });
+  } catch (err) {
+    console.log(err);
+    return false;
   }
-  return true;
 }
 
 // prettier-ignore
-export function validateContest(contest: any) {
-  const schema = {
+export function validateContest(contest: {}): Joi.ValidationResult {
+  const schema = Joi.object({
     name: Joi.string().required().min(1).max(50),
     problems: Joi.array().required().min(1).items(Joi.string()),
     startDate: Joi.date().required().min(Date.now()),
     duration: Joi.number().required().min(1),
     password: Joi.string().min(1).allow(null)
-  };
-  return Joi.validate(contest, schema);
+  })
+  return schema.validate(contest);
 }

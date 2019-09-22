@@ -1,5 +1,5 @@
 {
   "watch": ["src"],
   "ext": "ts,js,json",
-  "exec": "tsc -p . && node ."
+  "exec": "npm start"
 }

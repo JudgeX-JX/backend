@@ -1,13 +1,18 @@
-import { Response, NextFunction } from 'express';
+import { Response, NextFunction, Request } from 'express';
 import { Roles } from '../models/user';
+import { IAuthenticatedRequest } from '.';
 
 export function authorize(roles: Roles[]) {
-  return async function(req: any, res: Response, next: NextFunction) {
+  return (req: Request, res: Response, next: NextFunction): unknown => {
     const allowedRoles = roles.map(k => Roles[k]);
-    if (allowedRoles.includes(req.user.role)) next();
-    else
+    const { role } = (req as IAuthenticatedRequest).authenticatedUser;
+    if (allowedRoles.includes(role)) {
+      next();
+    }
+    else {
       return res
         .status(403)
         .json({ message: `Only allowed for ${allowedRoles}!` });
+    }
   };
 }

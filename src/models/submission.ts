@@ -1,7 +1,11 @@
 import mongoose from 'mongoose';
-import Joi from 'joi';
+import Joi from '@hapi/joi';
 import mongoosePaginate from 'mongoose-paginate-v2';
-import { enumToArray } from '../utils/enumToArray';
+import { judgeSubmissionID } from '../controllers/submission/Judge/JudgeFactory';
+import { PossibleDocumentOrObjectID } from '../utils/types';
+import { IProblem } from './problem';
+import { IUser } from './user';
+import { IContest } from './contest';
 
 export enum Verdict {
   PENDING,
@@ -14,11 +18,23 @@ export enum Verdict {
   JUDGE_ERROR = 13
 }
 
-export enum SubmissionStatus {
-  DONE,
-  JUDGING
-}
 
+
+export interface ISubmission extends mongoose.Document {
+  createdAt: string;
+  updatedAt: string;
+  contest: IContest;
+  problem: IProblem;
+  user: IUser;
+  isDuringContest: boolean;
+  judged: boolean;
+  judgeSubmissionID: judgeSubmissionID;
+  sourceCode: string;
+  verdict: string;
+  time: number;
+  memory: number;
+  languageID: number;
+}
 
 const submissionSchema = new mongoose.Schema({
   contest: {
@@ -31,27 +47,26 @@ const submissionSchema = new mongoose.Schema({
     ref: 'Problem',
     required: true
   },
-  isDuringContest: {
-    type: Boolean,
-    default: false
-  },
-  submissionStatus: {
-    type: String,
-    required: true,
-    default: SubmissionStatus[SubmissionStatus.JUDGING],
-    enum: enumToArray(SubmissionStatus),
-  },
-  scrapperSubmissionID: {
-    type: Number
-  },
   user: {
     type: mongoose.Types.ObjectId,
     ref: 'User',
     required: true
   },
+  isDuringContest: {
+    type: Boolean,
+    default: false
+  },
+  judged: {
+    type: String,
+    required: true,
+    default: false,
+  },
+  judgeSubmissionID: {
+    type: Number
+  },
   sourceCode: {
     type: String,
-    required: true
+    required: true,
   },
   verdict: {
     type: String,
@@ -59,7 +74,7 @@ const submissionSchema = new mongoose.Schema({
     // enum: enumToArray(Verdict)
   },
   time: {
-    type: String,
+    type: Number,
     default: null
   },
   languageID: {
@@ -76,15 +91,15 @@ const submissionSchema = new mongoose.Schema({
 
 submissionSchema.plugin(mongoosePaginate);
 
-export const Submission = mongoose.model('Submission', submissionSchema);
+export const Submission = mongoose.model<ISubmission>('Submission', submissionSchema);
 
 // prettier-ignore
-export function validateSubmission(submission: any) {
-  const schema = {
+export function validateSubmission(submission: {}): Joi.ValidationResult {
+  const schema = Joi.object({
     problem: Joi.string().required().min(1),
     contest: Joi.string().min(1),
     languageID: Joi.number().required().min(1),
     sourceCode: Joi.string().required().min(1)
-  };
-  return Joi.validate(submission, schema);
+  });
+  return schema.validate(submission);
 }

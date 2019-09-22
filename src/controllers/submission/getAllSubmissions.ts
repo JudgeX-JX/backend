@@ -2,8 +2,6 @@ import { Submission } from '../../models/submission';
 import { Request, Response } from 'express';
 import APIResponse from '../../utils/APIResponse';
 
-// CRUD operations
-
 export async function getAll(req: Request, res: Response) {
   const options = {
     page: parseInt(req.query.pageNumber) || 1,

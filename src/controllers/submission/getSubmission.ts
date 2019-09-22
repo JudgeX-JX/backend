@@ -2,7 +2,7 @@ import { Submission } from '../../models/submission';
 import { Request, Response } from 'express';
 import APIResponse from '../../utils/APIResponse';
 
-export async function getWithId(req: Request, res: Response) {
+export async function getWithId(req: Request, res: Response): Promise<Response> {
   const submissionId = req.params.id;
 
   try {
@@ -12,7 +12,9 @@ export async function getWithId(req: Request, res: Response) {
         select: '-sourceCode',
 
       })
-    if (!submission) return APIResponse.NotFound(res, `No submission with id ${submissionId}`)
+    if (!submission) {
+      return APIResponse.NotFound(res, `No submission with id ${submissionId}`)
+    }
 
     return APIResponse.Ok(res, submission);
   }

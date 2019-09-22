@@ -13,7 +13,6 @@
     "prettier/@typescript-eslint"
   ],
   "rules": {
-    "no-console": 1,
     "curly": 1,
     "no-empty": 0,
     "no-unused-vars": 1,

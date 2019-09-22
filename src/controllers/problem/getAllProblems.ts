@@ -4,7 +4,7 @@ import APIResponse from '../../utils/APIResponse';
 import { Submission } from '../../models/submission';
 
 
-export async function getAll(req: Request, res: Response) {
+export async function getAll(req: Request, res: Response): Promise<Response> {
 
   // only return problems that their contest has not started yet
   const problems = await Contest.aggregate([
