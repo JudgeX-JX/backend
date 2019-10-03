@@ -1,6 +1,6 @@
 import {IJudge} from './JudgeFactory';
 import {BaseJudge} from './BaseJudge';
-import {ISubmission, judgeSubmissionID} from '../../models/submission';
+import {ISubmission} from '../../models/submission';
 import Axios, {AxiosRequestConfig} from 'axios';
 
 export class CodeforcesJudge extends BaseJudge implements IJudge {
@@ -13,7 +13,7 @@ export class CodeforcesJudge extends BaseJudge implements IJudge {
     this.cfSubmitterApiKey = process.env.CF_SUBMITTER_API_KEY || '';
   }
 
-  async submit(): Promise<judgeSubmissionID> {
+  async submit(): Promise<void> {
     const cfID = this.problem.judge.cfID?.split('/');
     if (!cfID) {
       throw new Error('Not valid cfID' + cfID);
@@ -24,12 +24,26 @@ export class CodeforcesJudge extends BaseJudge implements IJudge {
       contestId: cfID[0],
       problem: cfID[1],
     };
-    const resp = await Axios.post(
+    const response = await Axios.post(
       `${this.cfSubmitterBaseUrl}/submit`,
       submission,
       this.getConfig(),
     );
-    return resp.data.id;
+    const {
+      id: judgeSubmissionID,
+      verdict,
+      isJudged,
+      time,
+      memory,
+    } = response.data;
+    this.submission.set({
+      judgeSubmissionID,
+      verdict,
+      isJudged,
+      time: time.split('')[0],
+      memory: memory.split('')[0],
+    });
+    await this.submission.save();
   }
 
   async getVerdict(judgeSubmissionID: string): Promise<string> {
