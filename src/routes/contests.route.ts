@@ -1,5 +1,5 @@
 import express from 'express';
-import * as contestController from '../controllers/contestController';
+import * as contestController from '../controllers/contest';
 import { authenticate } from '../middlewares/authentication';
 import { authorize } from '../middlewares/authorization';
 import { Roles } from '../models/user';
