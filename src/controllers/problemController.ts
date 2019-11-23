@@ -98,9 +98,11 @@ export function deleteWithId(req: Request | any, res: Response) {
       problem.delete();
       res.send(problem);
     })
-    .catch(err =>
-      res.status(404).json({
+    .catch(err => {
+      console.log(err);
+      return res.status(404).json({
         message: 'No problem with the specified id: ' + problemId
-      })
-    );
+      });
+    })
+
 }

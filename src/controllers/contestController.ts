@@ -112,6 +112,7 @@ export function deleteWithId(req: Request | any, res: Response) {
       res.send(contest);
     })
     .catch(error => {
+      console.log(error)
       res
         .status(404)
         .json({ message: 'No contest with the specified id: ' + contestId });

@@ -14,7 +14,7 @@ const logger =
   app.get('env') === 'development'
     ? morgan('dev')
     : morgan('combined', {
-        skip: (req, res) => res.statusCode < 500
+        skip: (_, res) => res.statusCode < 500
       });
 
 app.use(logger);

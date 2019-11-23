@@ -15,7 +15,7 @@ router.use('/submissions', submissions);
 router.use('/verify', verify);
 
 // 404
-router.all('*', function(req, res) {
+router.all('*', function(_, res) {
   res.status(404).json({ message: '🤔 Are you lost ?!' });
 });
 
