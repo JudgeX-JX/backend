@@ -84,4 +84,3 @@ typings/
 .dynamodb/
 
 dist/
-.vscode/
