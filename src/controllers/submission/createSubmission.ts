@@ -64,27 +64,32 @@ async function createStandingForUser(contest: any, user: any) {
   return standing;
 }
 
-async function isFirstSubmission(submission: any) {
+async function isFirstAccepted(submission: any) {
   // get first submission in the contest for this problem
-  const firstSubmission = await Submission.findOne({
+  // bring the first accepted submission if any
+  const firstAcceptedSubmission = await Submission.findOne({
     contest: submission.contest,
-    problem: submission.problem
+    problem: submission.problem,
+    verdict: "Accepted",
+    createdAt: { $lte: submission.createdAt }
   }).sort({
     createdAt: -1
   });
-  console.log(firstSubmission._id, submission._id);
-  // check if they have the same id
-  return firstSubmission._id.toString() == submission._id.toString();
+  console.log(firstAcceptedSubmission._id, submission._id);
+  if (!firstAcceptedSubmission) return true; // no accepted submissions before this one, so this is the first accepted one
+  // else, if the time of the first is equal to the time second, so this one is first accepted as well
+  return new Date(firstAcceptedSubmission.createdAt) == new Date(submission.createdAt);
 }
 
 async function judgeCodeforces(req: any, res: Response, problem: any) {
   const submission = new Submission(req.body);
+
   submission.user = req.user._id;
   submission.submissionStatus = SubmissionStatus[SubmissionStatus.JUDGING];
   submission.isDuringContest = isDuringContest(req.body.contest);
-  console.log(submission.isDuringContest);
+
   let standing: any;
-  if (submission.isDuringContest) { // contest still running, create standing for user
+  if (submission.isDuringContest) { // contest still running, create standing for this user
     standing = await Standing.findOne({
       contest: req.body.contest,
       user: submission.user,
@@ -92,7 +97,9 @@ async function judgeCodeforces(req: any, res: Response, problem: any) {
     if (!standing) standing = await createStandingForUser(submission.contest, submission.user);
   }
   console.log(`User standing: ${standing}`);
-  try {
+
+  try { // to submit to scrapper
+
     const scrapperResponse = await axios.post(`${process.env.CODEFORCES_SCRAPER_URL}/submit`, {
       "contestId": problem.codeforcesContestID,
       "problem": problem.codeforcesProblemLetter,
@@ -103,12 +110,12 @@ async function judgeCodeforces(req: any, res: Response, problem: any) {
         "x-api-key": process.env.CODEFORCES_SCRAPER_API_KEY
       }
     });
+
     submission.verdict = scrapperResponse.data.submission.verdict.trim();
     submission.scrapperSubmissionID = scrapperResponse.data.submission.id;
 
     if (!isStillJudging(submission))
       submission.submissionStatus = SubmissionStatus[SubmissionStatus.DONE]
-
 
     await submission.save();
 
@@ -119,7 +126,7 @@ async function judgeCodeforces(req: any, res: Response, problem: any) {
     const getLastVerdict = async () => {
       return new Promise(async function cb(resolve) {
         if (submission.submissionStatus == SubmissionStatus[SubmissionStatus.JUDGING]) {
-          try {
+          try { // to update submission verdict
             const scrapperResponse = await axios.get(
               `${process.env.CODEFORCES_SCRAPER_URL}/submission/${problem.codeforcesContestID}/${submission.scrapperSubmissionID}`,
               {
@@ -138,37 +145,40 @@ async function judgeCodeforces(req: any, res: Response, problem: any) {
             if (isStillJudging(submission)) {
               setTimeout(() => cb(resolve), 3000); // keep trying to get verdict
             }
-            else {
+            else { // not judging, verdict is finally determined
               submission.submissionStatus = SubmissionStatus[SubmissionStatus.DONE];
 
-              for (const index in standing.problems) {
-                console.log(standing.problems[index].problem.toString() == submission.problem.toString(), standing.problems[index].problem.toString(), submission.problem.toString())
-                if (standing.problems[index].problem.toString() == submission.problem.toString()) {
-                  standing.problems[index].totalSubmissions++;
-
-                  if (submission.verdict.toLowerCase() == "accepted") {
-
-                    if (!standing.problems[index].isAccepted) {// should calculate penality, should increase solved
-                      standing.solved++;
-                      standing.penality += standing.problems[index].failedSubmissions * 20 + calculateAcceptedPenality(submission.contest);
+              if (standing) // should update standing (submitted during contest)
+                for (const index in standing.problems) {
+                  // search for the problem in the standing problems array
+                  if (standing.problems[index].problem.toString() == submission.problem.toString()) { // found the problem
+                    standing.problems[index].totalSubmissions++; // increment submissions count for this problem
+                    if (submission.verdict.toLowerCase() == "accepted") {
+                      if (!standing.problems[index].isAccepted) {
+                        // not accepted before
+                        // should calculate penality, should increment solved
+                        standing.solved++;
+                        standing.penality += standing.problems[index].failedSubmissions * 20 + calculateAcceptedPenality(submission.contest);
+                      }
+                      standing.problems[index].isAccepted = true;
+                      if (isFirstAccepted(submission)) {
+                        console.log("---FIRST AC---", submission.problem.ballonColor);
+                        standing.problems[index].isFirstAccepted = true;
+                      }
+                    } else {
+                      // wrong answer
+                      standing.problems[index].failedSubmissions++; // increment failed submissions for this problem
                     }
-                    standing.problems[index].isAccepted = true;
-                    if (standing && isFirstSubmission(submission)) {
-                      console.log("FIRST AC");
-                      standing.problems[index].isFirstAccepted = true;
-                    }
-                  } else { // wrong answer
-                    standing.problems[index].failedSubmissions++;
+                    standing.save();
+                    break;
                   }
-                  standing.save();
-                  break;
+
                 }
 
-              }
+              // isFirstSubmission
+              submission.save();
+              resolve();
             }
-            // isFirstSubmission
-            submission.save();
-            resolve();
 
 
           } catch (err) {
