@@ -38,6 +38,11 @@ const standingSchema = new mongoose.Schema({
       required: true,
       default: 0
     },
+    solvedAt: {
+      type: Number,
+      required: true,
+      default: null
+    }
 
   }],
   solved: {

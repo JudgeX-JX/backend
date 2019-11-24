@@ -153,6 +153,7 @@ async function judgeCodeforces(req: any, res: Response, problem: any) {
                       if (!standing.problems[index].isAccepted) {
                         // not accepted before
                         // should calculate penality, should increment solved
+                        standing.problems[index].solvedAt = submission.createdAt;
                         standing.solved++;
                         standing.penality += standing.problems[index].failedSubmissions * 20 + calculateAcceptedPenality(submission.contest);
                       }
