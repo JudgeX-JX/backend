@@ -26,10 +26,9 @@ const submissionSchema = new mongoose.Schema({
     ref: 'Problem',
     required: true
   },
-  contest: {
-    type: mongoose.Types.ObjectId,
-    ref: 'Contest',
-    // required: true
+  duringContest: {
+    type: Boolean,
+    default: false
   },
   submissionStatus: {
     type: String,

@@ -5,6 +5,7 @@ import { Problem, ProblemType } from '../../models/problem';
 import APIResponse from '../../utils/APIResponse';
 
 export async function create(req: Request, res: Response) {
+  req.body.problem = req.params.id;
   const { error } = validateSubmission(req.body);
   if (error)
     return APIResponse.UnprocessableEntity(res, error.message)
@@ -12,6 +13,11 @@ export async function create(req: Request, res: Response) {
   const problem = await Problem.findById(req.body.problem);
   if (!problem)
     return APIResponse.UnprocessableEntity(res, `No valid problem with id: ${req.body.problem}`);
+
+
+  // can submit?
+  // during contest ?
+  // penality!
 
   if (problem.problemType == ProblemType[ProblemType.CODEFORCES])
     return judgeCodeforces(req, res, problem);
