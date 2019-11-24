@@ -1,21 +1,11 @@
-import { Problem } from '../../models/problem';
 import { Request, Response } from 'express';
 import { Contest } from '../../models/contest';
 import APIResponse from '../../utils/APIResponse';
 
 
 export async function getAll(req: Request, res: Response) {
-  const options = {
-    page: parseInt(req.query.pageNumber) || 1,
-    limit: parseInt(req.query.pageSize) || 10,
-    customLabels: {
-      docs: 'problems'
-    }
-  };
-  // const problems = await Contest.aggregate({
-  //   startDate: { $lt: new Date() }
-  // }).select('problems').populate('problems')
 
+  // only return problems that their contest has not started yet
   const problems = await Contest.aggregate([
     {
       $match: {
@@ -41,8 +31,5 @@ export async function getAll(req: Request, res: Response) {
   ]);
 
   return APIResponse.Ok(res, problems);
-  Problem.paginate({}, options, (err, result) => {
-    if (err) return res.json({ message: err });
-    res.send(result);
-  });
+
 }
