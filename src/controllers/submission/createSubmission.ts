@@ -67,18 +67,14 @@ async function createStandingForUser(contest: any, user: any) {
 async function isFirstAccepted(submission: any) {
   // get first submission in the contest for this problem
   // bring the first accepted submission if any
-  const firstAcceptedSubmission = await Submission.findOne({
+  const firstAcceptedSubmission = await Submission.exists({
     contest: submission.contest,
     problem: submission.problem,
     verdict: "Accepted",
-    createdAt: { $lte: submission.createdAt }
-  }).sort({
-    createdAt: -1
-  });
-  console.log(firstAcceptedSubmission._id, submission._id);
-  if (!firstAcceptedSubmission) return true; // no accepted submissions before this one, so this is the first accepted one
-  // else, if the time of the first is equal to the time second, so this one is first accepted as well
-  return new Date(firstAcceptedSubmission.createdAt) == new Date(submission.createdAt);
+    createdAt: { $lt: submission.createdAt }
+  })
+  if (firstAcceptedSubmission) return false;
+  return true; // no accepted submissions created before this one, so this is the first accepted submission
 }
 
 async function judgeCodeforces(req: any, res: Response, problem: any) {
@@ -161,7 +157,7 @@ async function judgeCodeforces(req: any, res: Response, problem: any) {
                         standing.penality += standing.problems[index].failedSubmissions * 20 + calculateAcceptedPenality(submission.contest);
                       }
                       standing.problems[index].isAccepted = true;
-                      if (isFirstAccepted(submission)) {
+                      if (await isFirstAccepted(submission)) {
                         console.log("---FIRST AC---", problem.ballonColor);
                         standing.problems[index].isFirstAccepted = true;
                       }

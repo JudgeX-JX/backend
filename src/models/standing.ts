@@ -23,6 +23,11 @@ const standingSchema = new mongoose.Schema({
       required: true,
       default: false,
     },
+    isFirstAccepted: {
+      type: Boolean,
+      required: true,
+      default: false
+    },
     failedSubmissions: {
       type: Number,
       required: true,
@@ -33,11 +38,7 @@ const standingSchema = new mongoose.Schema({
       required: true,
       default: 0
     },
-    isFirstAccepted: {
-      type: Number,
-      required: true,
-      default: false
-    },
+
   }],
   solved: {
     type: Number,
