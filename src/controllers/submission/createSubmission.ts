@@ -4,6 +4,7 @@ import axios from 'axios';
 import { Problem, ProblemType } from '../../models/problem';
 import APIResponse from '../../utils/APIResponse';
 import { Contest } from '../../models/contest';
+import { Standing } from '../../models/standing';
 
 export async function create(req: Request, res: Response) {
   req.body.problem = req.params.problemID;
@@ -39,17 +40,58 @@ export function isDuringContest(contest: any) {
   const start = new Date(contest.startDate);
   const end = new Date();
   end.setMinutes(start.getMinutes() + contest.duration);
-  // console.log(`Start: ${start}\nDuration: ${contest.duration}\nEnd: ${end}\nNow: ${new Date()}`)
+  console.log(`Start: ${start}\nDuration: ${contest.duration}\nEnd: ${end}\nNow: ${new Date()}`)
   return new Date() < end && new Date() > start;
 }
 
+async function createStandingForUser(contest: any, user: any) {
+  const standing = new Standing({
+    user,
+    contest,
+    penality: 0
+  });
+
+  for (const problem of contest.problems) {
+    standing.problems.push({
+      problem,
+      isAccepted: false,
+      failedSubmissions: 0,
+      totalSubmissions: 0,
+      isFirstAccepted: false,
+    })
+  }
+  standing.save();
+  return standing;
+}
+
+async function isFirstSubmission(submission: any) {
+  // get first submission in the contest for this problem
+  const firstSubmission = await Submission.findOne({
+    contest: submission.contest,
+    problem: submission.problem
+  }).sort({
+    createdAt: -1
+  });
+  console.log(firstSubmission._id, submission._id);
+  // check if they have the same id
+  return firstSubmission._id.toString() == submission._id.toString();
+}
 
 async function judgeCodeforces(req: any, res: Response, problem: any) {
   const submission = new Submission(req.body);
   submission.user = req.user._id;
   submission.submissionStatus = SubmissionStatus[SubmissionStatus.JUDGING];
   submission.isDuringContest = isDuringContest(req.body.contest);
-
+  console.log(submission.isDuringContest);
+  let standing: any;
+  if (submission.isDuringContest) { // contest still running, create standing for user
+    standing = await Standing.findOne({
+      contest: req.body.contest,
+      user: submission.user,
+    });
+    if (!standing) standing = await createStandingForUser(submission.contest, submission.user);
+  }
+  console.log(`User standing: ${standing}`);
   try {
     const scrapperResponse = await axios.post(`${process.env.CODEFORCES_SCRAPER_URL}/submit`, {
       "contestId": problem.codeforcesContestID,
@@ -86,18 +128,48 @@ async function judgeCodeforces(req: any, res: Response, problem: any) {
                 }
               });
             submission.verdict = scrapperResponse.data.submission.verdict.trim();
-            submission.executionTime = scrapperResponse.data.submission.time;
+            submission.time = scrapperResponse.data.submission.time;
             submission.memory = scrapperResponse.data.submission.memory;
 
+            function calculateAcceptedPenality(contest: any) {
+              return new Date().getMinutes() - new Date(contest.startDate).getMinutes();
+            }
 
             if (isStillJudging(submission)) {
-              setTimeout(() => cb(resolve), 3000);
+              setTimeout(() => cb(resolve), 3000); // keep trying to get verdict
             }
             else {
-              submission.submissionStatus = SubmissionStatus[SubmissionStatus.DONE]
-              resolve();
+              submission.submissionStatus = SubmissionStatus[SubmissionStatus.DONE];
+
+              for (const index in standing.problems) {
+                console.log(standing.problems[index].problem.toString() == submission.problem.toString(), standing.problems[index].problem.toString(), submission.problem.toString())
+                if (standing.problems[index].problem.toString() == submission.problem.toString()) {
+                  standing.problems[index].totalSubmissions++;
+
+                  if (submission.verdict.toLowerCase() == "accepted") {
+
+                    if (!standing.problems[index].isAccepted) {// should calculate penality, should increase solved
+                      standing.solved++;
+                      standing.penality += standing.problems[index].failedSubmissions * 20 + calculateAcceptedPenality(submission.contest);
+                    }
+                    standing.problems[index].isAccepted = true;
+                    if (standing && isFirstSubmission(submission)) {
+                      console.log("FIRST AC");
+                      standing.problems[index].isFirstAccepted = true;
+                    }
+                  } else { // wrong answer
+                    standing.problems[index].failedSubmissions++;
+                  }
+                  standing.save();
+                  break;
+                }
+
+              }
             }
+            // isFirstSubmission
             submission.save();
+            resolve();
+
 
           } catch (err) {
             console.log(err);
@@ -105,12 +177,9 @@ async function judgeCodeforces(req: any, res: Response, problem: any) {
           }
         } else resolve();
       });
-
     }
 
     await getLastVerdict();
-
-
 
   } catch (err) {
     console.log(err)

@@ -59,10 +59,6 @@ const submissionSchema = new mongoose.Schema({
     // enum: enumToArray(Verdict)
   },
   time: {
-    type: Date,
-    default: Date.now
-  },
-  executionTime: {
     type: String,
     default: null
   },
@@ -74,6 +70,8 @@ const submissionSchema = new mongoose.Schema({
     type: String,
     default: null
   }
+}, {
+  timestamps: true
 });
 
 submissionSchema.plugin(mongoosePaginate);
