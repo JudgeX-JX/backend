@@ -1,16 +1,17 @@
-import { Request, Response, NextFunction } from 'express';
+import { NextFunction, Request, Response } from 'express';
 
 export function errorHandler(
   err: any,
-  _: Request,
+  _req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) {
   if (res.headersSent) {
     return next(err);
   }
 
-  let status = err.status ? +err.status : 500;
+  console.log(err);
+  const status = err.status ? +err.status : 500;
   let message = '';
   if (status >= 500) {
     message = '🤒 Server error';
@@ -18,5 +19,5 @@ export function errorHandler(
     message = err.message ? err.message : '🤒 Something went wrong';
   }
 
-  return res.status(status).json({ message: message });
+  return res.status(status).json({ message });
 }
