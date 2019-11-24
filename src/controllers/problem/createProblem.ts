@@ -1,14 +1,14 @@
-import { Problem, validateProblem } from '../../models/problem';
+import { Problem } from '../../models/problem';
 import { Request, Response } from 'express';
 import _ from 'lodash';
+import APIResponse from '../../utils/APIResponse';
 
 
 export function create(req: Request | any, res: Response) {
-    const { error } = validateProblem(req.body);
-    if (error) return res.status(422).json({ message: error.details[0].message });
-
-    const problem = new Problem(req.body);
-    problem.setter = req.user._id;
-    problem.save();
-    res.send(problem);
+  // const { error } = validateProblem(req.body);
+  // if (error) return APIResponse.UnprocessableEntity(res, error.message);
+  const problem = new Problem(req.body);
+  problem.setter = req.user._id;
+  problem.save();
+  return APIResponse.Created(res, problem);
 }
