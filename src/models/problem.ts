@@ -9,39 +9,83 @@ export enum Difficulty {
   HARD
 }
 
+export enum ProblemType {
+  CODEFORCES,
+  LOCAL
+}
+
 const problemSchema = new mongoose.Schema({
-  name: {
+  // letter,
+  // title,
+  // color,
+  // timeLimit,
+  // memoryLimit,
+  // input,
+  // output,
+  // statment
+  title: {
     type: String,
     required: true,
     minlength: 1,
     maxlength: 50
   },
+  ballonColor: {
+    type: String,
+    // required: true,
+  },
+  constest: {
+    type: mongoose.Schema.Types.ObjectId,
+    // required: true,
+    ref: 'Contest'
+  },
+  problemType: {
+    type: String,
+    enum: enumToArray(ProblemType),
+    required: true,
+  },
   setter: {
     type: mongoose.Schema.Types.ObjectId,
-    required: true,
+    // required: true,
     ref: 'User'
   },
-  description: {
+  statement: { // problem statement
     type: String,
     required: true
   },
-  inputs: {
-    type: [String],
-    required: true
+  noteStatment: {
+    type: String,
+    // required: true
   },
-  outputs: {
+  sampleInputs: {
     type: [String],
-    required: true
+    // required: true
   },
+  sampleOutputs: {
+    type: [String],
+    // required: true
+  },
+  inputStatment: {
+    type: String,
+  },
+  outputStatment: {
+    type: String,
+  },
+  codeforcesContestID: {
+    type: String,
+  },
+  codeforcesProblemLetter: {
+    type: String,
+  },
+
   timeLimit: {
     type: Number,
-    required: true,
+    // required: true,
     min: 1,
     max: 10
   },
   memoryLimit: {
     type: Number,
-    required: true,
+    // required: true,
     min: 5,
     max: 500
   },
@@ -50,8 +94,8 @@ const problemSchema = new mongoose.Schema({
   },
   difficulty: {
     type: String,
-    required: true,
-    enum: [...enumToArray(Difficulty)]
+    // required: true,
+    enum: enumToArray(Difficulty)
   }
 });
 
@@ -61,15 +105,18 @@ export const Problem = mongoose.model('Problem', problemSchema);
 
 // prettier-ignore
 export function validateProblem(problem: any) {
+  // console.log(problem)
   const schema = {
-    name: Joi.string().required().min(1).max(50),
-    description: Joi.string().required().min(10),
-    inputs: Joi.array().required(),
-    outputs: Joi.array().required().length(problem.inputs.length),
-    timeLimit: Joi.number().required().min(1).max(10),
-    memoryLimit: Joi.number().required().min(5).max(500),
+    title: Joi.string().min(1).max(50),
+    ballonColor: Joi.string(),
+    statement: Joi.string().min(10),
+    sampleInputs: Joi.array(),
+    sampleOutputs: Joi.array().length(problem.sampleInputs.length),
+    timeLimit: Joi.number().min(1).max(10),
+    memoryLimit: Joi.number().min(5).max(500),
     tags: Joi.array(),
-    difficulty: Joi.string().required().valid([...enumToArray(Difficulty)])
+    difficulty: Joi.string().valid(enumToArray(Difficulty))
   };
   return Joi.validate(problem, schema);
+  // return false;
 }
