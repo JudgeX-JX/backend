@@ -74,7 +74,7 @@ async function judgeCodeforces(req: any, res: Response, problem: any) {
 
           } catch (err) {
             console.log(err);
-            return APIResponse.BadRequest(res, err);
+            console.log("Scrapper ERRRRRRRRRRRRRRORRRR!!!")
           }
         } else resolve();
       });
