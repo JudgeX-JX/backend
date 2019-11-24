@@ -44,7 +44,7 @@ async function judgeCodeforces(req: any, res: Response, problem: any) {
 
     APIResponse.Created(res, submission); // return response to user
 
-    // keep making requests until judge
+    // keep making requests until judging is over
 
     const getLastVerdict = async () => {
       return new Promise(async function cb(resolve) {
@@ -64,7 +64,7 @@ async function judgeCodeforces(req: any, res: Response, problem: any) {
             const verdict = submission.verdict.toLowerCase();
             const stillJudging = verdict.startsWith("running") || verdict.startsWith("in");
             if (stillJudging)
-              setTimeout(() => cb(resolve), 1000);
+              setTimeout(() => cb(resolve), 3000);
             else {
               submission.submissionStatus = SubmissionStatus[SubmissionStatus.DONE]
               submission.save();
@@ -75,7 +75,7 @@ async function judgeCodeforces(req: any, res: Response, problem: any) {
             console.log(err);
             return APIResponse.BadRequest(res, err);
           }
-        }
+        } else resolve();
       });
 
     }
