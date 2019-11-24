@@ -3,9 +3,10 @@ import { Request, Response } from 'express';
 import axios from 'axios';
 import { Problem, ProblemType } from '../../models/problem';
 import APIResponse from '../../utils/APIResponse';
+import { Contest } from '../../models/contest';
 
 export async function create(req: Request, res: Response) {
-  req.body.problem = req.params.id;
+  req.body.problem = req.params.problemID;
   const { error } = validateSubmission(req.body);
   if (error)
     return APIResponse.UnprocessableEntity(res, error.message)
@@ -14,9 +15,11 @@ export async function create(req: Request, res: Response) {
   if (!problem)
     return APIResponse.UnprocessableEntity(res, `No valid problem with id: ${req.body.problem}`);
 
-
+  req.body.contest = await Contest.findById(req.params.contestID);
+  if (!req.body.contest)
+    return APIResponse.UnprocessableEntity(res, `No contest with id: ${req.params.contestID}`);
   // can submit?
-  // during contest ?
+  // during contest?
   // penality!
 
   if (problem.problemType == ProblemType[ProblemType.CODEFORCES])
@@ -26,12 +29,21 @@ export async function create(req: Request, res: Response) {
 
 }
 
+function isDuringContest(contest: any) {
+  const start = new Date(contest.startDate);
+  const end = new Date();
+  end.setMinutes(start.getMinutes() + contest.duration);
+  // console.log(`Start: ${start}\nDuration: ${contest.duration}\nEnd: ${end}\nNow: ${new Date()}`)
+  return new Date() < end && new Date() > start;
+}
+
 
 async function judgeCodeforces(req: any, res: Response, problem: any) {
   const submission = new Submission(req.body);
   submission.user = req.user._id;
   submission.submissionStatus = SubmissionStatus[SubmissionStatus.JUDGING];
-
+  submission.isDuringContest = isDuringContest(req.body.contest);
+  console.log(submission.isDuringContest);
   try {
     const scrapperResponse = await axios.post(`${process.env.CODEFORCES_SCRAPER_URL}/submit`, {
       "contestId": problem.codeforcesContestID,
