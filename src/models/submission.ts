@@ -21,12 +21,17 @@ export enum SubmissionStatus {
 
 
 const submissionSchema = new mongoose.Schema({
+  contest: {
+    type: mongoose.Types.ObjectId,
+    ref: 'Contest',
+    required: true
+  },
   problem: {
     type: mongoose.Types.ObjectId,
     ref: 'Problem',
     required: true
   },
-  duringContest: {
+  isDuringContest: {
     type: Boolean,
     default: false
   },
