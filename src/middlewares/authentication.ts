@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { Response, NextFunction } from 'express';
+import APIResponse from '../utils/APIResponse';
 
 export async function authenticate(
   req: any,
@@ -9,9 +10,7 @@ export async function authenticate(
   const token = req.token;
 
   if (!token)
-    return res
-      .status(401)
-      .json({ message: 'Access denied! No token provided.' });
+    return APIResponse.Unauthorized(res, 'Access denied! No token provided.');
 
   try {
     req.user = await jwt.verify(token, process.env.JWT_SECRET_KEY || '');
