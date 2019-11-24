@@ -1,6 +1,5 @@
 import mongoose from 'mongoose';
 import Joi from 'joi';
-// import { enumToArray } from '../utils/enumToArray';
 import mongoosePaginate from 'mongoose-paginate-v2';
 import { enumToArray } from '../utils/enumToArray';
 

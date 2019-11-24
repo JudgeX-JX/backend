@@ -37,8 +37,12 @@ async function judgeCodeforces(req: any, res: Response, problem: any) {
         "x-api-key": process.env.CODEFORCES_SCRAPER_API_KEY
       }
     });
-    submission.verdict = scrapperResponse.data.submission.verdict;
+    submission.verdict = scrapperResponse.data.submission.verdict.trim();
     submission.scrapperSubmissionID = scrapperResponse.data.submission.id;
+
+    if (!isStillJudging(submission))
+      submission.submissionStatus = SubmissionStatus[SubmissionStatus.DONE]
+
 
     await submission.save();
 
@@ -57,13 +61,12 @@ async function judgeCodeforces(req: any, res: Response, problem: any) {
                   "x-api-key": process.env.CODEFORCES_SCRAPER_API_KEY
                 }
               });
-            submission.verdict = scrapperResponse.data.submission.verdict;
+            submission.verdict = scrapperResponse.data.submission.verdict.trim();
             submission.executionTime = scrapperResponse.data.submission.time;
             submission.memory = scrapperResponse.data.submission.memory;
 
-            const verdict = submission.verdict.toLowerCase();
-            const stillJudging = verdict.startsWith("running") || verdict.startsWith("in");
-            if (stillJudging) {
+
+            if (isStillJudging(submission)) {
               setTimeout(() => cb(resolve), 3000);
             }
             else {
@@ -90,6 +93,12 @@ async function judgeCodeforces(req: any, res: Response, problem: any) {
     return APIResponse.BadRequest(res, "ERROR");
   }
 
+}
+
+function isStillJudging(submission: any) {
+  const verdict = submission.verdict.trim().toLowerCase();
+  const stillJudging = verdict.startsWith("running") || verdict.startsWith("in");
+  return stillJudging;
 }
 
 
