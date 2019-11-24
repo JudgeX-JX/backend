@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { Contest } from '../../models/contest';
 import APIResponse from '../../utils/APIResponse';
+import { Submission } from '../../models/submission';
 
 
 export async function getAll(req: Request, res: Response) {
@@ -29,6 +30,18 @@ export async function getAll(req: Request, res: Response) {
       },
     },
   ]);
+
+  for (const problem of problems) {
+    problem.submissions = await Submission.find({
+      user: (req as any).user._id,
+      problem
+    });
+    problem.isSolved = await Submission.exists({
+      user: (req as any).user._id,
+      problem,
+      verdict: "Accepted"
+    })
+  }
 
   return APIResponse.Ok(res, problems);
 

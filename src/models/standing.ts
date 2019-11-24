@@ -40,7 +40,7 @@ const standingSchema = new mongoose.Schema({
     },
     solvedAt: {
       type: Number,
-      required: true,
+      // required: true,
       default: null
     }
 
