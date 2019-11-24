@@ -19,7 +19,8 @@ export async function create(req: Request, res: Response) {
   if (!req.body.contest)
     return APIResponse.UnprocessableEntity(res, `No contest with id: ${req.params.contestID}`);
   // can submit?
-  // during contest?
+  if (!contestStarted(req.body.contest))
+    return APIResponse.Forbidden(res, 'You cannot submit to this contest! contest has not started yet!')
   // penality!
 
   if (problem.problemType == ProblemType[ProblemType.CODEFORCES])
@@ -29,7 +30,12 @@ export async function create(req: Request, res: Response) {
 
 }
 
-function isDuringContest(contest: any) {
+export function contestStarted(contest: any) {
+  const start = new Date(contest.startDate);
+  return new Date() > start;
+}
+
+export function isDuringContest(contest: any) {
   const start = new Date(contest.startDate);
   const end = new Date();
   end.setMinutes(start.getMinutes() + contest.duration);
