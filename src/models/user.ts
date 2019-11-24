@@ -31,7 +31,7 @@ const userSchema = new mongoose.Schema({
   role: {
     type: String,
     default: Roles[Roles.USER],
-    enum: [...enumToArray(Roles)]
+    enum: enumToArray(Roles)
   },
   isVerified: {
     required: true,
@@ -39,17 +39,17 @@ const userSchema = new mongoose.Schema({
     default: false
   },
   verificationToken: {
-    required: true,
+    // required: true,
     type: String
   }
 });
 
-userSchema.methods.generateEmailVerificationToken = function() {
+userSchema.methods.generateEmailVerificationToken = function () {
   this.verificationToken = crypto.randomBytes(16).toString('hex');
   return this.verificationToken;
 };
 
-userSchema.methods.generateAuthToken = function() {
+userSchema.methods.generateAuthToken = function () {
   const token = jwt.sign(
     { _id: this._id, role: this.role },
     process.env.JWT_SECRET_KEY || ''
