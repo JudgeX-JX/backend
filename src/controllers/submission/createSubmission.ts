@@ -63,13 +63,14 @@ async function judgeCodeforces(req: any, res: Response, problem: any) {
 
             const verdict = submission.verdict.toLowerCase();
             const stillJudging = verdict.startsWith("running") || verdict.startsWith("in");
-            if (stillJudging)
+            if (stillJudging) {
               setTimeout(() => cb(resolve), 3000);
+            }
             else {
               submission.submissionStatus = SubmissionStatus[SubmissionStatus.DONE]
-              submission.save();
               resolve();
             }
+            submission.save();
 
           } catch (err) {
             console.log(err);
@@ -88,10 +89,6 @@ async function judgeCodeforces(req: any, res: Response, problem: any) {
     console.log(err)
     return APIResponse.BadRequest(res, "ERROR");
   }
-  //   "submission": {
-  //     "id": "65607437",
-  //     "verdict": "Running on test 1"
-  //    }
 
 }
 
