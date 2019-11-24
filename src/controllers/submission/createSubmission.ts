@@ -162,7 +162,7 @@ async function judgeCodeforces(req: any, res: Response, problem: any) {
                       }
                       standing.problems[index].isAccepted = true;
                       if (isFirstAccepted(submission)) {
-                        console.log("---FIRST AC---", submission.problem.ballonColor);
+                        console.log("---FIRST AC---", problem.ballonColor);
                         standing.problems[index].isFirstAccepted = true;
                       }
                     } else {
@@ -175,7 +175,6 @@ async function judgeCodeforces(req: any, res: Response, problem: any) {
 
                 }
 
-              // isFirstSubmission
               submission.save();
               resolve();
             }
