@@ -9,7 +9,8 @@ export async function getWithId(req: Request, res: Response) {
     const submission = await Submission.findById(submissionId)
       .populate({
         path: 'user problem',
-        // select: 'name'
+        select: '-sourceCode',
+
       })
     if (!submission) return APIResponse.NotFound(res, `No submission with id ${submissionId}`)
 

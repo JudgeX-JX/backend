@@ -151,6 +151,7 @@ async function judgeCodeforces(req: any, res: Response, problem: any) {
                     standing.problems[index].totalSubmissions++; // increment submissions count for this problem
                     if (submission.verdict.toLowerCase() == "accepted") {
                       if (!standing.problems[index].isAccepted) {
+                        console.log("---NEW AC---", problem.ballonColor);
                         // not accepted before
                         // should calculate penality, should increment solved
                         // should store solution time

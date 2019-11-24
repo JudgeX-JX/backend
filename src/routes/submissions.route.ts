@@ -7,10 +7,10 @@ import { Roles } from '../models/user';
 const router = express.Router();
 
 router.get('/', submissionController.getAll);
-// router.get('/:id', submissionController.getWithId);
 
 router.use(authenticate);
 router.get('/my', submissionController.getMySubmissions);
+// router.get('/:id', submissionController.getWithId);
 
 router.use(authorize([Roles.ADMIN]));
 // router.put('/:id', submissionController.updateWithId);
