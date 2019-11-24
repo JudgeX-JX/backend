@@ -33,11 +33,6 @@ const problemSchema = new mongoose.Schema({
     type: String,
     // required: true,
   },
-  constest: {
-    type: mongoose.Schema.Types.ObjectId,
-    // required: true,
-    ref: 'Contest'
-  },
   problemType: {
     type: String,
     enum: enumToArray(ProblemType),
