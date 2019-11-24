@@ -10,7 +10,6 @@ router.get('/', submissionController.getAll);
 // router.get('/:id', submissionController.getWithId);
 
 router.use(authenticate);
-router.post('/:id', submissionController.create);
 router.get('/my', submissionController.getMySubmissions);
 
 router.use(authorize([Roles.ADMIN]));
