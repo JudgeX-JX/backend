@@ -49,7 +49,7 @@ async function judgeCodeforces(req: any, res: Response, problem: any) {
   submission.user = req.user._id;
   submission.submissionStatus = SubmissionStatus[SubmissionStatus.JUDGING];
   submission.isDuringContest = isDuringContest(req.body.contest);
-  console.log(submission.isDuringContest);
+
   try {
     const scrapperResponse = await axios.post(`${process.env.CODEFORCES_SCRAPER_URL}/submit`, {
       "contestId": problem.codeforcesContestID,
