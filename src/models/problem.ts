@@ -45,7 +45,7 @@ const problemSchema = new mongoose.Schema({
   },
   statement: { // problem statement
     type: String,
-    required: true
+    // required: true
   },
   noteStatment: {
     type: String,
