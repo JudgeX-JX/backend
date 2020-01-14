@@ -6,10 +6,12 @@ import { Roles } from '../models/user';
 
 const router = express.Router();
 
+
+router.use(authenticate);
+
 router.get('/', problemController.getAll);
 router.get('/:id', problemController.getWithId);
 
-router.use(authenticate);
 router.use(authorize([Roles.PROBLEM_SETTER, Roles.ADMIN]));
 
 router.post('/', problemController.create);

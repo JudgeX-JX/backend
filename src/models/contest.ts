@@ -47,11 +47,13 @@ export const Contest = mongoose.model('Contest', contestSchema);
 
 export async function validateProblems(problems: string[]) {
   for (const problem of problems) {
-    const res = await Problem.findById(problem)
-      .then(() => true)
-      .catch(() => false);
-
-    if (!res) return res;
+    try {
+      const res = await Problem.findById(problem);
+      if (!res) return false;
+    } catch (err) {
+      console.log(err);
+      return false;
+    }
   }
   return true;
 }
