@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose, { PaginateModel } from 'mongoose';
 import Joi from '@hapi/joi';
 import mongoosePaginate from 'mongoose-paginate-v2';
 import { judgeSubmissionID } from '../controllers/submission/Judge/JudgeFactory';
@@ -91,7 +91,7 @@ const submissionSchema = new mongoose.Schema({
 
 submissionSchema.plugin(mongoosePaginate);
 
-export const Submission = mongoose.model<ISubmission>('Submission', submissionSchema);
+export const Submission = mongoose.model('Submission', submissionSchema) as PaginateModel<ISubmission>;
 
 // prettier-ignore
 export function validateSubmission(submission: {}): Joi.ValidationResult {

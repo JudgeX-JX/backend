@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose, { PaginateModel } from 'mongoose';
 import Joi from '@hapi/joi';
 import mongoosePaginate from 'mongoose-paginate-v2';
 import { Problem } from './problem';
@@ -53,17 +53,12 @@ const contestSchema = new mongoose.Schema({
 
 contestSchema.plugin(mongoosePaginate);
 
-export const Contest = mongoose.model<IContest>('Contest', contestSchema);
+export const Contest = mongoose.model('Contest', contestSchema) as PaginateModel<IContest>;
 
 export async function validProblemIDs(problems: string[]): Promise<boolean> {
-  try {
-    return await Problem.exists({
-      $all: problems
-    });
-  } catch (err) {
-    console.log(err);
-    return false;
-  }
+  return await Problem.exists({
+    $all: problems
+  });
 }
 
 // prettier-ignore
