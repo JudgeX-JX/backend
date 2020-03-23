@@ -1,8 +1,6 @@
 import mongoose, { PaginateModel } from 'mongoose';
 import Joi from '@hapi/joi';
 import mongoosePaginate from 'mongoose-paginate-v2';
-import { judgeSubmissionID } from '../controllers/submission/Judge/JudgeFactory';
-import { PossibleDocumentOrObjectID } from '../utils/types';
 import { IProblem } from './problem';
 import { IUser } from './user';
 import { IContest } from './contest';
@@ -18,6 +16,7 @@ export enum Verdict {
   JUDGE_ERROR = 13
 }
 
+export type judgeSubmissionID = string;
 
 
 export interface ISubmission extends mongoose.Document {
@@ -57,12 +56,12 @@ const submissionSchema = new mongoose.Schema({
     default: false
   },
   judged: {
-    type: String,
+    type: Boolean,
     required: true,
     default: false,
   },
   judgeSubmissionID: {
-    type: Number
+    type: String
   },
   sourceCode: {
     type: String,
@@ -96,6 +95,7 @@ export const Submission = mongoose.model('Submission', submissionSchema) as Pagi
 // prettier-ignore
 export function validateSubmission(submission: {}): Joi.ValidationResult {
   const schema = Joi.object({
+    user: Joi.any(),
     problem: Joi.string().required().min(1),
     contest: Joi.string().min(1),
     languageID: Joi.number().required().min(1),
