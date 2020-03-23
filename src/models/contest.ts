@@ -56,9 +56,14 @@ contestSchema.plugin(mongoosePaginate);
 export const Contest = mongoose.model('Contest', contestSchema) as PaginateModel<IContest>;
 
 export async function validProblemIDs(problems: string[]): Promise<boolean> {
-  return await Problem.exists({
-    $all: problems
-  });
+  try {
+    return await Problem.exists({
+      _id: { $all: problems }
+    });
+  } catch (err) {
+    console.log(err);
+    return false;
+  }
 }
 
 // prettier-ignore
