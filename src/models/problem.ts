@@ -16,21 +16,21 @@ export interface IProblem extends mongoose.Document {
     statement: string;
     inputSpecification: string;
     outputSpecification: string;
-    samples: [{ in: string, out: string }];
+    samples: [{ input: string, output: string }];
     timeLimit: number;
     memoryLimit: number;
     note: string;
   };
   judge: {
     type: JudgeName;
-    tests?: [{ in: string, out: string }],
+    tests?: [{ input: string, output: string }],
     cfID?: string;
   }
 }
 
 const testCaseSchema = new mongoose.Schema({
-  in: String,
-  out: String
+  input: String,
+  output: String
 }, { _id: false });
 
 const judgeSchema = new mongoose.Schema({
@@ -76,8 +76,8 @@ export function validateProblem(problem: any): Joi.ValidationResult {
     }), judge: Joi.object({
       type: Joi.string().allow(...enumToArray(JudgeType)).required(),
       tests: Joi.array().items(Joi.object({
-        in: Joi.string().required(),
-        out: Joi.string().required()
+        input: Joi.string().required(),
+        output: Joi.string().required()
       })),
       cfID: Joi.string()
     })
