@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 import APIResponse from '../../utils/APIResponse';
 import { IAuthenticatedRequest } from '../../middlewares';
 
-export async function create(req: Request, res: Response) {
+export async function create(req: Request, res: Response): Promise<Response> {
   const { error } = validateContest(req.body);
   if (error) { return APIResponse.UnprocessableEntity(res, error.message); }
 
@@ -13,6 +13,6 @@ export async function create(req: Request, res: Response) {
 
   const contest = new Contest(req.body);
   contest.setter = (req as IAuthenticatedRequest).authenticatedUser._id;
-  contest.save();
-  res.send(contest);
+  await contest.save();
+  return APIResponse.Ok(res, contest);
 }
