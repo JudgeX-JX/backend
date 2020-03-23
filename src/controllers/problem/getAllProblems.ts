@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { Contest } from '../../models/contest';
 import APIResponse from '../../utils/APIResponse';
 import { Submission } from '../../models/submission';
+import { IAuthenticatedRequest } from '../../middlewares';
 
 
 export async function getAll(req: Request, res: Response): Promise<Response> {
@@ -29,19 +30,27 @@ export async function getAll(req: Request, res: Response): Promise<Response> {
         newRoot: '$problems',
       },
     },
+    {
+      $lookup: {
+        from: 'submissions',
+        localField: (req as IAuthenticatedRequest).authenticatedUser._id,
+        foreignField: 'user',
+        as: 'submissions'
+      }
+    }
   ]);
 
-  for (const problem of problems) {
-    problem.submissions = await Submission.find({
-      user: (req as any).user._id,
-      problem
-    });
-    problem.isSolved = await Submission.exists({
-      user: (req as any).user._id,
-      problem,
-      verdict: "Accepted"
-    })
-  }
+  // for (const problem of problems) {
+  //   problem.submissions = await Submission.find({
+  //     user: (req as IAuthenticatedRequest).authenticatedUser._id,
+  //     problem
+  //   });
+  //   problem.isSolved = await Submission.exists({
+  //     user: (req as IAuthenticatedRequest).authenticatedUser._id,
+  //     problem,
+  //     verdict: "Accepted"
+  //   })
+  // }
 
   return APIResponse.Ok(res, problems);
 
