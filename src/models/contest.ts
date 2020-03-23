@@ -47,7 +47,7 @@ const contestSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    default: null // no password by default (the contest is general i.e: available for all the users)
+    // no password by default (the contest is general i.e: available for all the users)
   }
 });
 
