@@ -1,36 +1,41 @@
-import { Submission, validateSubmission, Verdict } from '../../models/submission';
+import { Submission, validateSubmission } from '../../models/submission';
 import { Request, Response } from 'express';
-import axios, { AxiosResponse, AxiosPromise } from 'axios';
-import { Problem } from '../../models/problem';
 import APIResponse from '../../utils/APIResponse';
-import { Contest } from '../../models/contest';
-import { Standing } from '../../models/standing';
 import { IAuthenticatedRequest } from '../../middlewares';
-import { IJudge, JudgeFactory } from './Judge/JudgeFactory';
-import { BaseJudge } from './Judge/BaseJudge';
+import { BaseJudge } from '../../lib/Judge/BaseJudge';
+import { IJudge, JudgeFactory } from '../../lib/Judge/JudgeFactory';
 
 export async function create(req: Request, res: Response): Promise<Response> {
   req.body.problem = req.params.problemID;
+  req.body.contest = req.params.contestID;
+  req.body.user = (req as IAuthenticatedRequest).authenticatedUser._id;
+
   const { error } = validateSubmission(req.body);
   if (error) { return APIResponse.UnprocessableEntity(res, error.message) }
 
-  req.body.problem = await Problem.findById(req.body.problem);
-  if (!req.body.problem) {
-    return APIResponse.UnprocessableEntity(res, `No valid problem with id: ${req.body.problem}`);
-  }
+  const submission = await new Submission(req.body).populate({
+    path: 'problem',
+    select: 'judge'
+  }).populate({
+    path: 'contest',
+    select: 'startDate duration'
+  }).execPopulate();
 
-  req.body.contest = await Contest.findById(req.params.contestID);
-  if (!req.body.contest) {
+  if (!submission.problem) {
+    return APIResponse.UnprocessableEntity(res, `No valid problem with id: ${req.params.problemID}`);
+  }
+  if (!submission.contest) {
     return APIResponse.UnprocessableEntity(res, `No contest with id: ${req.params.contestID}`);
   }
   // can submit?
-  if (!BaseJudge.contestStarted(req.body.contest)) {
+  if (!BaseJudge.contestStarted(submission.contest)) {
     return APIResponse.Forbidden(res, 'You cannot submit to this contest! contest has not started yet!')
   }
 
-  const submission = new Submission(req.body);
-  const judge: IJudge = new JudgeFactory(req.body.problem).createJudge(submission);
-  judge.submit();
+  const judge = new JudgeFactory(submission.problem).createJudge(submission);
+
+  submission.judgeSubmissionID = await judge.submit();
+  await submission.save();
 
   return APIResponse.Created(res, 'Submitted Successfully!');
 }
