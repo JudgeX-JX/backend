@@ -6,9 +6,9 @@ export async function getWithId(req: Request, res: Response): Promise<Response> 
 
   const contest = await Contest.findById(contestId)
     .populate({
-      path: 'setter problems',
+      path: 'setter',
       select: 'name'
-    })
+    }).populate('problems')
 
   if (!contest) {
     return res
