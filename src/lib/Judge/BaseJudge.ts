@@ -1,8 +1,8 @@
-import { Standing } from '../../../models/standing';
-import { Submission, ISubmission } from '../../../models/submission';
-import { IProblem } from '../../../models/problem';
-import { IUser } from '../../../models/user';
-import { IContest } from '../../../models/contest';
+import { IContest } from '../../models/contest';
+import { IUser } from '../../models/user';
+import { IProblem } from '../../models/problem';
+import { ISubmission, Submission } from '../../models/submission';
+import { Standing } from '../../models/standing';
 
 export class BaseJudge {
   readonly SUBMISSION_PENALITY = 20;

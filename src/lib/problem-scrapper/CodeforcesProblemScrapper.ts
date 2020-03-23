@@ -1,5 +1,5 @@
 import Axios from 'axios';
-import { IProblem } from '../../../models/problem';
+import { IProblem } from '../../models/problem';
 
 
 export class CodeforcesProblemScrapper {
@@ -15,8 +15,6 @@ export class CodeforcesProblemScrapper {
         // only store values
         resp.data.timeLimit = timeLimit.value;
         resp.data.memoryLimit = memoryLimit.value;
-        console.log('AFTER ------ EDIT')
-        console.log(resp.data)
         return resp.data;
       } else {
         throw new Error(`Unkown unit type ${timeLimit}  ${memoryLimit}`)
@@ -25,7 +23,6 @@ export class CodeforcesProblemScrapper {
       console.error(resp);
       throw new Error(resp.data);
     }
-    // return {};
   }
 
 }

@@ -1,14 +1,12 @@
-import { IProblem, JudgeType } from '../../../models/problem'
 import { CodeforcesJudge } from './CodeforcesJudge';
 import { Judge0Judge } from './Judge0Judge';
 import { LocalJudge } from './LocalJudge';
-import { ISubmission } from '../../../models/submission';
-
-export type judgeSubmissionID = string;
+import { IProblem, JudgeType } from '../../models/problem';
+import { ISubmission, judgeSubmissionID } from '../../models/submission';
 
 export interface IJudge {
-  submit(): judgeSubmissionID;
-  getVerdict(judgeSubmissionID: judgeSubmissionID): string;
+  submit(): Promise<judgeSubmissionID>;
+  getVerdict(judgeSubmissionID: judgeSubmissionID): Promise<string>;
 }
 
 
@@ -17,12 +15,12 @@ export class JudgeFactory {
   }
 
   createJudge(submission: ISubmission): IJudge {
-    switch (this.problem.judge.type) {
-      case JudgeType[JudgeType.CODEFORCES]:
+    switch (JudgeType[this.problem.judge.type]) {
+      case JudgeType.CODEFORCES:
         return new CodeforcesJudge(submission);
-      case JudgeType[JudgeType.JUDGE0]:
+      case JudgeType.JUDGE0:
         return new Judge0Judge(submission);
-      case JudgeType[JudgeType.LOCAL]:
+      case JudgeType.LOCAL:
         return new LocalJudge(submission);
       default:
         throw new Error('unkown judge: ' + this.problem.judge.type);
