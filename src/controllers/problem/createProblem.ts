@@ -1,7 +1,7 @@
 import { Problem, validateProblem } from '../../models/problem';
 import { Request, Response } from 'express';
 import APIResponse from '../../utils/APIResponse';
-import { CodeforcesProblemScrapper } from '../submission/Judge/CodeforcesProblemScrapper';
+import { CodeforcesProblemScrapper } from '../../lib/problem-scrapper/CodeforcesProblemScrapper';
 
 export async function create(req: Request, res: Response): Promise<Response> {
   const { error } = validateProblem(req.body);
