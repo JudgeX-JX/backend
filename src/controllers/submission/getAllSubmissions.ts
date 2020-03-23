@@ -2,7 +2,7 @@ import { Submission } from '../../models/submission';
 import { Request, Response } from 'express';
 import APIResponse from '../../utils/APIResponse';
 
-export async function getAll(req: Request, res: Response) {
+export async function getAll(req: Request, res: Response): Promise<Response> {
   const options = {
     page: parseInt(req.query.pageNumber) || 1,
     limit: parseInt(req.query.pageSize) || 10,
