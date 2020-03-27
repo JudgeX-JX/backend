@@ -5,7 +5,7 @@ import { IProblem } from '../../models/problem';
 export class CodeforcesProblemScrapper {
   private readonly BASE_URL: string;
   constructor() {
-    this.BASE_URL = process.env.CF_PROBLEM_PARSER_API_URL || 'http://localhost';
+    this.BASE_URL = process.env.CF_PROBLEM_SCRAPPER_URL || '';
   }
   async parseProblem(problemID: string): Promise<IProblem['description']> {
     const resp = await Axios.get(`${this.BASE_URL}/?id=${problemID}`);
