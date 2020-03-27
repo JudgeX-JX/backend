@@ -58,7 +58,8 @@ export const Contest = mongoose.model('Contest', contestSchema) as PaginateModel
 export async function validProblemIDs(problems: string[]): Promise<boolean> {
   try {
     return await Problem.exists({
-      _id: { $all: problems }
+      // TODO WARNING remove never when $all problem is fixed
+      _id: { $all: problems as never }
     });
   } catch (err) {
     console.log(err);
