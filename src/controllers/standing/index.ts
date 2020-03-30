@@ -1,1 +1,1 @@
-export * from './getAllStandings'
+export * from './getAllStandings';

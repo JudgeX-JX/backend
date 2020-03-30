@@ -1,8 +1,8 @@
-import { NextFunction, Request, Response } from 'express';
+import {NextFunction, Request, Response} from 'express';
 import jwt from 'jsonwebtoken';
 
 import APIResponse from '../utils/APIResponse';
-import { AuthenticatedUser } from './AuthenticatedUser';
+import {AuthenticatedUser} from './AuthenticatedUser';
 
 export interface IDecodedToken {
   readonly _id: string;
@@ -39,7 +39,7 @@ export function authenticate(
     (req as IAuthenticatedRequest).authenticatedUser = _auth(token);
     next();
   } catch (error) {
-    console.error(error)
+    console.error(error);
     return APIResponse.BadRequest(res);
   }
 }

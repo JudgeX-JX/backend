@@ -1,13 +1,15 @@
-import { Contest, validateContest, validProblemIDs } from '../../models/contest';
-import { Request, Response } from 'express';
+import {Contest, validateContest, validProblemIDs} from '../../models/contest';
+import {Request, Response} from 'express';
 import APIResponse from '../../utils/APIResponse';
-import { IAuthenticatedRequest } from '../../middlewares';
+import {IAuthenticatedRequest} from '../../middlewares';
 
 export async function create(req: Request, res: Response): Promise<Response> {
-  const { error } = validateContest(req.body);
-  if (error) { return APIResponse.UnprocessableEntity(res, error.message); }
+  const {error} = validateContest(req.body);
+  if (error) {
+    return APIResponse.UnprocessableEntity(res, error.message);
+  }
 
-  if (!await validProblemIDs(req.body.problems)) {
+  if (!(await validProblemIDs(req.body.problems))) {
     return APIResponse.UnprocessableEntity(res, 'Invalid problem id');
   }
 

@@ -1,10 +1,10 @@
-import { Request, Response } from 'express';
-import { User } from '../models/user';
+import {Request, Response} from 'express';
+import {User} from '../models/user';
 
 export async function verify(req: Request, res: Response): Promise<Response> {
   const token = req.params.token;
   const user = await User.findOne({
-    verificationToken: token
+    verificationToken: token,
   });
 
   if (!user) {
@@ -12,12 +12,12 @@ export async function verify(req: Request, res: Response): Promise<Response> {
   }
   if (user.isVerified) {
     return res.json({
-      message: 'You email has been already verified!'
+      message: 'You email has been already verified!',
     });
   }
   user.isVerified = true;
   user.save();
   return res.json({
-    message: 'You email has been verified successfully!'
+    message: 'You email has been verified successfully!',
   });
 }

@@ -1,9 +1,9 @@
-import mongoose, { PaginateModel } from 'mongoose';
+import mongoose, {PaginateModel} from 'mongoose';
 import Joi from '@hapi/joi';
 import mongoosePaginate from 'mongoose-paginate-v2';
-import { IProblem } from './problem';
-import { IUser } from './user';
-import { IContest } from './contest';
+import {IProblem} from './problem';
+import {IUser} from './user';
+import {IContest} from './contest';
 
 export enum Verdict {
   PENDING,
@@ -13,11 +13,10 @@ export enum Verdict {
   COMPILATION_ERROR,
   RUNTIME_ERROR,
   MEMORY_LIMIT_EXCEEDED,
-  JUDGE_ERROR = 13
+  JUDGE_ERROR = 13,
 }
 
 export type judgeSubmissionID = string;
-
 
 export interface ISubmission extends mongoose.Document {
   createdAt: string;
@@ -35,62 +34,68 @@ export interface ISubmission extends mongoose.Document {
   languageID: number;
 }
 
-const submissionSchema = new mongoose.Schema({
-  contest: {
-    type: mongoose.Types.ObjectId,
-    ref: 'Contest',
-    required: true
+const submissionSchema = new mongoose.Schema(
+  {
+    contest: {
+      type: mongoose.Types.ObjectId,
+      ref: 'Contest',
+      required: true,
+    },
+    problem: {
+      type: mongoose.Types.ObjectId,
+      ref: 'Problem',
+      required: true,
+    },
+    user: {
+      type: mongoose.Types.ObjectId,
+      ref: 'User',
+      required: true,
+    },
+    isDuringContest: {
+      type: Boolean,
+      default: false,
+    },
+    judged: {
+      type: Boolean,
+      required: true,
+      default: false,
+    },
+    judgeSubmissionID: {
+      type: String,
+    },
+    sourceCode: {
+      type: String,
+      required: true,
+    },
+    verdict: {
+      type: String,
+      default: Verdict[Verdict.PENDING],
+      // enum: enumToArray(Verdict)
+    },
+    time: {
+      type: Number,
+      default: null,
+    },
+    languageID: {
+      type: Number,
+      required: true,
+    },
+    memory: {
+      type: String,
+      default: null,
+    },
   },
-  problem: {
-    type: mongoose.Types.ObjectId,
-    ref: 'Problem',
-    required: true
+  {
+    timestamps: true,
   },
-  user: {
-    type: mongoose.Types.ObjectId,
-    ref: 'User',
-    required: true
-  },
-  isDuringContest: {
-    type: Boolean,
-    default: false
-  },
-  judged: {
-    type: Boolean,
-    required: true,
-    default: false,
-  },
-  judgeSubmissionID: {
-    type: String
-  },
-  sourceCode: {
-    type: String,
-    required: true,
-  },
-  verdict: {
-    type: String,
-    default: Verdict[Verdict.PENDING],
-    // enum: enumToArray(Verdict)
-  },
-  time: {
-    type: Number,
-    default: null
-  },
-  languageID: {
-    type: Number,
-    required: true,
-  },
-  memory: {
-    type: String,
-    default: null
-  }
-}, {
-  timestamps: true
-});
+);
 
 submissionSchema.plugin(mongoosePaginate);
 
-export const Submission = mongoose.model('Submission', submissionSchema) as PaginateModel<ISubmission>;
+export const Submission = mongoose.model(
+  'Submission',
+  submissionSchema,
+) as PaginateModel<ISubmission>;
 
 // prettier-ignore
 export function validateSubmission(submission: {}): Joi.ValidationResult {

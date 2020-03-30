@@ -1,5 +1,5 @@
-import { Contest } from '../../models/contest';
-import { Request, Response } from 'express';
+import {Contest} from '../../models/contest';
+import {Request, Response} from 'express';
 
 export function getAll(req: Request, res: Response) {
   const options = {
@@ -7,14 +7,16 @@ export function getAll(req: Request, res: Response) {
     limit: parseInt(req.query.pageSize, 10) || 10,
     populate: {
       path: 'setter problems',
-      select: 'name'
+      select: 'name',
     },
     customLabels: {
-      docs: 'contests'
-    }
+      docs: 'contests',
+    },
   };
   Contest.paginate({}, options, (err, result) => {
-    if (err) return res.json({ message: err });
+    if (err) {
+      return res.json({message: err});
+    }
     res.send(result);
   });
 }

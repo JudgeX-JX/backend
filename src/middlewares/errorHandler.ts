@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from 'express';
+import {NextFunction, Request, Response} from 'express';
 
 export function errorHandler(
   err: any,
@@ -19,5 +19,5 @@ export function errorHandler(
     message = err.message ? err.message : '🤒 Something went wrong';
   }
 
-  return res.status(status).json({ message });
+  return res.status(status).json({message});
 }

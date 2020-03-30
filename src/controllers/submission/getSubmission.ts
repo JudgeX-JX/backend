@@ -1,26 +1,25 @@
-import { Submission } from '../../models/submission';
-import { Request, Response } from 'express';
+import {Submission} from '../../models/submission';
+import {Request, Response} from 'express';
 import APIResponse from '../../utils/APIResponse';
 
-export async function getWithId(req: Request, res: Response): Promise<Response> {
+export async function getWithId(
+  req: Request,
+  res: Response,
+): Promise<Response> {
   const submissionId = req.params.id;
 
   try {
-    const submission = await Submission.findById(submissionId)
-      .populate({
-        path: 'user problem',
-        select: '-sourceCode',
-
-      })
+    const submission = await Submission.findById(submissionId).populate({
+      path: 'user problem',
+      select: '-sourceCode',
+    });
     if (!submission) {
-      return APIResponse.NotFound(res, `No submission with id ${submissionId}`)
+      return APIResponse.NotFound(res, `No submission with id ${submissionId}`);
     }
 
     return APIResponse.Ok(res, submission);
-  }
-  catch (err) {
+  } catch (err) {
     console.log(err);
     return APIResponse.BadRequest(res, err);
   }
-
 }

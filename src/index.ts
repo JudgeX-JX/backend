@@ -10,7 +10,7 @@ database
   .then(init)
   .then(server.run)
   .then(() => console.info(clrs.green('🤩 Enjoy judging!')))
-  .catch(err => {
+  .catch((err) => {
     console.error(err);
     process.exit(1);
   });

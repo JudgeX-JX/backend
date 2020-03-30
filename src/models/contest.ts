@@ -1,7 +1,7 @@
-import mongoose, { PaginateModel } from 'mongoose';
+import mongoose, {PaginateModel} from 'mongoose';
 import Joi from '@hapi/joi';
 import mongoosePaginate from 'mongoose-paginate-v2';
-import { Problem } from './problem';
+import {Problem} from './problem';
 
 export interface IContest extends mongoose.Document {
   name: string;
@@ -18,48 +18,51 @@ const contestSchema = new mongoose.Schema({
     type: String,
     required: true,
     minlength: 1,
-    maxlength: 50
+    maxlength: 50,
   },
   setter: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
-    ref: 'User'
+    ref: 'User',
   },
   problems: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Problem'
-    }
+      ref: 'Problem',
+    },
   ],
   registeredUsers: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User'
-    }
+      ref: 'User',
+    },
   ],
   startDate: {
     type: Date,
-    required: true
+    required: true,
   },
   duration: {
     type: Number,
-    required: true // number of minutes the contest will last
+    required: true, // number of minutes the contest will last
   },
   password: {
     type: String,
     // no password by default (the contest is general i.e: available for all the users)
-  }
+  },
 });
 
 contestSchema.plugin(mongoosePaginate);
 
-export const Contest = mongoose.model('Contest', contestSchema) as PaginateModel<IContest>;
+export const Contest = mongoose.model(
+  'Contest',
+  contestSchema,
+) as PaginateModel<IContest>;
 
 export async function validProblemIDs(problems: string[]): Promise<boolean> {
   try {
     return await Problem.exists({
       // TODO WARNING remove never when $all problem is fixed
-      _id: { $all: problems as never }
+      _id: {$all: problems as never},
     });
   } catch (err) {
     console.log(err);

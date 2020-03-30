@@ -1,36 +1,38 @@
-import { User, validateUser } from '../../models/user';
-import { Request, Response } from 'express';
+import {User, validateUser} from '../../models/user';
+import {Request, Response} from 'express';
 import _ from 'lodash';
 import bcrypt from 'bcryptjs';
 import nodemailer from 'nodemailer';
 import colors from 'colors/safe';
 
-
 export async function signup(req: Request, res: Response) {
-  const { error } = validateUser(req.body);
+  const {error} = validateUser(req.body);
 
   if (error) {
     return res.status(422).json({
-      message: error.details[0].message
+      message: error.details[0].message,
     });
   }
 
-  if (await User.findOne({ email: req.body.email })) {
+  if (await User.findOne({email: req.body.email})) {
     return res.status(422).json({
-      message: 'This email already exists!'
+      message: 'This email already exists!',
     });
   }
 
   const user: any = new User(_.pick(req.body, ['name', 'email', 'password']));
 
-  if (process.env.EMAIL_VERIFICATION && process.env.EMAIL_VERIFICATION.toLowerCase() === 'true') {
+  if (
+    process.env.EMAIL_VERIFICATION &&
+    process.env.EMAIL_VERIFICATION.toLowerCase() === 'true'
+  ) {
     user.generateEmailVerificationToken();
 
     sendVerificationEmail(
       user.verificationToken,
       user.email,
-      req.headers.host || ''
-    )
+      req.headers.host || '',
+    );
   }
 
   const salt = await bcrypt.genSalt(10);
@@ -39,18 +41,18 @@ export async function signup(req: Request, res: Response) {
 
   res.json({
     token: user.generateAuthToken(),
-    ..._.pick(user, ['name', 'email', 'role'])
+    ..._.pick(user, ['name', 'email', 'role']),
   });
 }
 
 async function sendVerificationEmail(
   verificationToken: string,
   recieverEmail: string,
-  host: string
+  host: string,
 ): Promise<void> {
-  const sender: { email: string; password: string } = {
+  const sender: {email: string; password: string} = {
     email: process.env.EMAIL || '',
-    password: process.env.EMAIL_PASSWORD || ''
+    password: process.env.EMAIL_PASSWORD || '',
   };
 
   if (!sender.email || !sender.password) {
@@ -61,8 +63,8 @@ async function sendVerificationEmail(
     service: 'Gmail',
     auth: {
       user: sender.email,
-      pass: sender.password
-    }
+      pass: sender.password,
+    },
   });
 
   const verfificationLink =
@@ -73,9 +75,8 @@ async function sendVerificationEmail(
     to: recieverEmail,
     subject: 'Verify Your Email', // Subject
     html:
-      'Please use the following link to verify your Email: <a href=\'' +
+      "Please use the following link to verify your Email: <a href='" +
       verfificationLink +
-      '\'>here</a>.'
+      "'>here</a>.",
   });
 }
-

@@ -1,5 +1,5 @@
-import { Submission } from '../../models/submission';
-import { Request, Response } from 'express';
+import {Submission} from '../../models/submission';
+import {Request, Response} from 'express';
 import APIResponse from '../../utils/APIResponse';
 
 export async function getAll(req: Request, res: Response): Promise<Response> {
@@ -11,8 +11,8 @@ export async function getAll(req: Request, res: Response): Promise<Response> {
     },
     select: '-sourceCode',
     customLabels: {
-      docs: 'submissions'
-    }
+      docs: 'submissions',
+    },
   };
   const submissions = await Submission.paginate({}, options);
 

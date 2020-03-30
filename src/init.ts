@@ -7,9 +7,7 @@ export default async (): Promise<void> => {
   });
 
   const generateRandomPassword = (): string =>
-    Math.random()
-      .toString(36)
-      .slice(-8);
+    Math.random().toString(36).slice(-8);
 
   if (!user) {
     user = new User({

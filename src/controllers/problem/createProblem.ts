@@ -1,10 +1,10 @@
-import { Problem, validateProblem } from '../../models/problem';
-import { Request, Response } from 'express';
+import {Problem, validateProblem} from '../../models/problem';
+import {Request, Response} from 'express';
 import APIResponse from '../../utils/APIResponse';
-import { CodeforcesProblemScrapper } from '../../lib/problem-scrapper/CodeforcesProblemScrapper';
+import {CodeforcesProblemScrapper} from '../../lib/problem-scrapper/CodeforcesProblemScrapper';
 
 export async function create(req: Request, res: Response): Promise<Response> {
-  const { error } = validateProblem(req.body);
+  const {error} = validateProblem(req.body);
   if (error) {
     return APIResponse.UnprocessableEntity(res, error.message);
   }

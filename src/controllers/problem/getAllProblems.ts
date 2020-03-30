@@ -1,18 +1,16 @@
-import { Request, Response } from 'express';
-import { Contest } from '../../models/contest';
+import {Request, Response} from 'express';
+import {Contest} from '../../models/contest';
 import APIResponse from '../../utils/APIResponse';
-import { Submission } from '../../models/submission';
-import { IAuthenticatedRequest } from '../../middlewares';
-
+import {Submission} from '../../models/submission';
+import {IAuthenticatedRequest} from '../../middlewares';
 
 export async function getAll(req: Request, res: Response): Promise<Response> {
-
   // only return problems that their contest has not started yet
   const problems = await Contest.aggregate([
     {
       $match: {
-        startDate: { $lt: new Date() }
-      }
+        startDate: {$lt: new Date()},
+      },
     },
     {
       $lookup: {
@@ -35,9 +33,9 @@ export async function getAll(req: Request, res: Response): Promise<Response> {
         from: 'submissions',
         localField: (req as IAuthenticatedRequest).authenticatedUser._id,
         foreignField: 'user',
-        as: 'submissions'
-      }
-    }
+        as: 'submissions',
+      },
+    },
   ]);
 
   // for (const problem of problems) {
@@ -53,5 +51,4 @@ export async function getAll(req: Request, res: Response): Promise<Response> {
   // }
 
   return APIResponse.Ok(res, problems);
-
 }

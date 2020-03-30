@@ -1,8 +1,8 @@
-import { IContest } from '../../models/contest';
-import { IUser } from '../../models/user';
-import { IProblem } from '../../models/problem';
-import { ISubmission, Submission } from '../../models/submission';
-import { Standing } from '../../models/standing';
+import {IContest} from '../../models/contest';
+import {IUser} from '../../models/user';
+import {IProblem} from '../../models/problem';
+import {ISubmission, Submission} from '../../models/submission';
+import {Standing} from '../../models/standing';
 
 export class BaseJudge {
   readonly SUBMISSION_PENALITY = 20;
@@ -11,7 +11,13 @@ export class BaseJudge {
   protected problem: IProblem;
 
   constructor(protected submission: ISubmission) {
-    ({ contest: this.contest, user: this.user, problem: this.problem } = submission);
+    ({
+      contest: this.contest,
+      user: this.user,
+      problem: this.problem,
+    } = submission);
+    if (this.isDuringContest()) {
+    }
   }
 
   static contestStarted(contest: IContest): boolean {
@@ -32,16 +38,15 @@ export class BaseJudge {
       user: this.user,
       contest: this.contest,
       penality: 0,
-      problems: this.contest.problems.map(p => {
+      problems: this.contest.problems.map((p) => {
         return {
           p,
           isAccepted: false,
           failedSubmissions: 0,
           totalSubmissions: 0,
           isFirstAccepted: false,
-        }
-
-      })
+        };
+      }),
     });
     standing.save();
     return standing;
@@ -54,18 +59,21 @@ export class BaseJudge {
       contest: this.submission.contest,
       problem: this.submission.problem,
       verdict: 'Accepted',
-      createdAt: { $lt: this.submission.createdAt }
-    })
+      createdAt: {$lt: this.submission.createdAt},
+    });
     return !previousAcceptedSubmission;
   }
 
   calculateAcceptedPenality(): number {
-    return new Date().getMinutes() - new Date(this.contest.startDate).getMinutes();
+    return (
+      new Date().getMinutes() - new Date(this.contest.startDate).getMinutes()
+    );
   }
 
   isStillJudging(): boolean {
     const verdict = this.submission.verdict.trim().toLowerCase();
-    const stillJudging = verdict.startsWith('running') || verdict.startsWith('in');
+    const stillJudging =
+      verdict.startsWith('running') || verdict.startsWith('in');
     return stillJudging;
   }
 }

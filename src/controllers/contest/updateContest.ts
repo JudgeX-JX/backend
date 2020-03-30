@@ -1,21 +1,25 @@
-import { Contest, validateContest, validProblemIDs } from '../../models/contest';
-import { Request, Response } from 'express';
+import {Contest, validateContest, validProblemIDs} from '../../models/contest';
+import {Request, Response} from 'express';
 import APIResponse from '../../utils/APIResponse';
 
-
-export async function updateWithId(req: Request, res: Response): Promise<Response> {
+export async function updateWithId(
+  req: Request,
+  res: Response,
+): Promise<Response> {
   const contestId = req.params.id;
 
   const contest = await Contest.findById(contestId);
 
   if (!contest) {
-    return APIResponse.NotFound(res, 'No contest with id ' + contestId)
+    return APIResponse.NotFound(res, 'No contest with id ' + contestId);
   }
 
-  const { error } = validateContest(req.body);
-  if (error) { return APIResponse.UnprocessableEntity(res, error.message); }
+  const {error} = validateContest(req.body);
+  if (error) {
+    return APIResponse.UnprocessableEntity(res, error.message);
+  }
 
-  if (!await validProblemIDs(req.body.problems)) {
+  if (!(await validProblemIDs(req.body.problems))) {
     return APIResponse.UnprocessableEntity(res, 'Invalid problem id');
   }
   await contest.set(req.body).save();

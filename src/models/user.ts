@@ -2,13 +2,13 @@ import mongoose from 'mongoose';
 import Joi from '@hapi/joi';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
-import { enumToArray } from '../utils/enumToArray';
-import { IDecodedToken } from '../middlewares';
+import {enumToArray} from '../utils/enumToArray';
+import {IDecodedToken} from '../middlewares';
 
 export enum Roles {
   ADMIN,
   PROBLEM_SETTER,
-  USER
+  USER,
 }
 
 export interface IUser extends mongoose.Document {
@@ -25,33 +25,37 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
     minlength: 3,
-    maxlength: 50
+    maxlength: 50,
   },
   email: {
     type: String,
     required: true,
     minlength: 3,
     maxlength: 50,
-    unique: true
+    unique: true,
   },
   password: {
     type: String,
-    required: true
+    required: true,
   },
   role: {
     type: String,
     default: Roles[Roles.USER],
-    enum: enumToArray(Roles)
+    enum: enumToArray(Roles),
   },
   isVerified: {
     required: true,
     type: Boolean,
-    default: false
+    default: false,
   },
   verificationToken: {
     // required: true,
-    type: String
-  }
+    type: String,
+  },
+  fromInit: {
+    // only for users created on server init
+    type: Boolean,
+  },
 });
 
 userSchema.methods.generateEmailVerificationToken = function (): string {
@@ -62,12 +66,9 @@ userSchema.methods.generateEmailVerificationToken = function (): string {
 userSchema.methods.generateAuthToken = function (): string {
   const token: IDecodedToken = {
     role: this.role,
-    _id: this._id
-  }
-  return jwt.sign(
-    token,
-    process.env.JWT_SECRET_KEY || ''
-  );
+    _id: this._id,
+  };
+  return jwt.sign(token, process.env.JWT_SECRET_KEY || '');
 };
 
 export const User = mongoose.model<IUser>('User', userSchema);

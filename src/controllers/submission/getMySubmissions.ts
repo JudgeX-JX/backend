@@ -1,14 +1,17 @@
-import { Submission } from '../../models/submission';
-import { Request, Response } from 'express';
+import {Submission} from '../../models/submission';
+import {Request, Response} from 'express';
 import APIResponse from '../../utils/APIResponse';
-import { IAuthenticatedRequest } from '../../middlewares';
+import {IAuthenticatedRequest} from '../../middlewares';
 
-export async function getMySubmissions(req: Request, res: Response): Promise<Response> {
+export async function getMySubmissions(
+  req: Request,
+  res: Response,
+): Promise<Response> {
   const user = (req as IAuthenticatedRequest).authenticatedUser._id;
   const filter = req.query;
   const submissions = await Submission.find({
     user,
-    ...filter
+    ...filter,
   });
 
   return APIResponse.Ok(res, submissions);

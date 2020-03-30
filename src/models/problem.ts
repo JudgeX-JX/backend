@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import Joi from '@hapi/joi';
-import { enumToArray } from '../utils/enumToArray';
+import {enumToArray} from '../utils/enumToArray';
 import mongoosePaginate from 'mongoose-paginate-v2';
 
 export enum JudgeType {
@@ -16,45 +16,51 @@ export interface IProblem extends mongoose.Document {
     statement: string;
     inputSpecification: string;
     outputSpecification: string;
-    samples: [{ input: string, output: string }];
+    samples: [{input: string; output: string}];
     timeLimit: number;
     memoryLimit: number;
     note: string;
   };
   judge: {
     type: JudgeName;
-    tests?: [{ input: string, output: string }],
+    tests?: [{input: string; output: string}];
     cfID?: string;
-  }
+  };
 }
 
-const testCaseSchema = new mongoose.Schema({
-  input: String,
-  output: String
-}, { _id: false });
-
-const judgeSchema = new mongoose.Schema({
-  type: {
-    type: String,
-    enum: enumToArray(JudgeType),
-    required: true,
+const testCaseSchema = new mongoose.Schema(
+  {
+    input: String,
+    output: String,
   },
-  tests: testCaseSchema,
-  cfID: String,
-}, { _id: false })
+  {_id: false},
+);
+
+const judgeSchema = new mongoose.Schema(
+  {
+    type: {
+      type: String,
+      enum: enumToArray(JudgeType),
+      required: true,
+    },
+    tests: testCaseSchema,
+    cfID: String,
+  },
+  {_id: false},
+);
 
 const problemSchema = new mongoose.Schema({
   description: {
-    title: { required: true, type: String },
-    statement: { required: true, type: String },
-    inputSpecification: { required: true, type: String },
-    outputSpecification: { required: true, type: String },
-    samples: { required: true, type: [testCaseSchema] },
-    timeLimit: { required: true, type: Number },
-    memoryLimit: { required: true, type: Number },
-    note: { required: true, type: String }
+    title: {required: true, type: String},
+    statement: {required: true, type: String},
+    inputSpecification: {required: true, type: String},
+    outputSpecification: {required: true, type: String},
+    samples: {required: true, type: [testCaseSchema]},
+    timeLimit: {required: true, type: Number},
+    memoryLimit: {required: true, type: Number},
+    note: {required: true, type: String},
   },
-  judge: judgeSchema
+  judge: judgeSchema,
 });
 
 problemSchema.plugin(mongoosePaginate);

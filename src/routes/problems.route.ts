@@ -1,11 +1,10 @@
 import express from 'express';
 import * as problemController from '../controllers/problem';
-import { authenticate } from '../middlewares/authentication';
-import { authorize } from '../middlewares/authorization';
-import { Roles } from '../models/user';
+import {authenticate} from '../middlewares/authentication';
+import {authorize} from '../middlewares/authorization';
+import {Roles} from '../models/user';
 
 const router = express.Router();
-
 
 router.use(authenticate);
 

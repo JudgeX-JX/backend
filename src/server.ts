@@ -5,7 +5,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import bearerToken from 'express-bearer-token';
-import { errorHandler } from './middlewares';
+import {errorHandler} from './middlewares';
 import routes from './routes';
 
 const app = express();
@@ -14,12 +14,12 @@ const logger =
   app.get('env') === 'development'
     ? morgan('dev')
     : morgan('combined', {
-      skip: (_, res) => res.statusCode < 500
-    });
+        skip: (_, res) => res.statusCode < 500,
+      });
 
 app.use(logger);
-app.use(express.json({ limit: '5mb' }));
-app.use(express.urlencoded({ limit: '5mb', extended: true }));
+app.use(express.json({limit: '5mb'}));
+app.use(express.urlencoded({limit: '5mb', extended: true}));
 app.use(cors());
 app.use(helmet());
 app.use(bearerToken());
@@ -33,14 +33,14 @@ export function run(): Promise<http.Server> {
 
     server.once('listening', () => {
       console.info(
-        clrs.green(`🤟 Server is listening at port ${clrs.yellow(port + '')}`)
+        clrs.green(`🤟 Server is listening at port ${clrs.yellow(port + '')}`),
       );
       resolve(server);
     });
 
-    server.once('error', err => {
+    server.once('error', (err) => {
       console.error(
-        clrs.red(`🤔 Server failed to listen at ${clrs.yellow(port + '')}`)
+        clrs.red(`🤔 Server failed to listen at ${clrs.yellow(port + '')}`),
       );
       reject(err);
     });
