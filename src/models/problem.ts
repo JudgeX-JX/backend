@@ -68,7 +68,7 @@ problemSchema.plugin(mongoosePaginate);
 export const Problem = mongoose.model<IProblem>('Problem', problemSchema);
 
 // prettier-ignore
-export function validateProblem(problem: any): Joi.ValidationResult {
+export function validateProblem(problem: {}): Joi.ValidationResult {
   const schema = Joi.object({
     description: Joi.object({
       title: Joi.string().required(),
