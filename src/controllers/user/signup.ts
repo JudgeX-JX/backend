@@ -1,31 +1,24 @@
 import {User, validateUser} from '../../models/user';
 import {Request, Response} from 'express';
-import _ from 'lodash';
 import bcrypt from 'bcryptjs';
 import nodemailer from 'nodemailer';
 import colors from 'colors/safe';
+import APIResponse from '../../utils/APIResponse';
 
-export async function signup(req: Request, res: Response) {
+export async function signup(req: Request, res: Response): Promise<Response> {
   const {error} = validateUser(req.body);
 
   if (error) {
-    return res.status(422).json({
-      message: error.details[0].message,
-    });
+    return APIResponse.UnprocessableEntity(res, error.details[0].message);
   }
 
   if (await User.findOne({email: req.body.email})) {
-    return res.status(422).json({
-      message: 'This email already exists!',
-    });
+    return APIResponse.UnprocessableEntity(res, 'This email already exists!');
   }
 
-  const user: any = new User(_.pick(req.body, ['name', 'email', 'password']));
+  const user = new User(req.body);
 
-  if (
-    process.env.EMAIL_VERIFICATION &&
-    process.env.EMAIL_VERIFICATION.toLowerCase() === 'true'
-  ) {
+  if (process.env.EMAIL_VERIFICATION?.toLowerCase() === 'true') {
     user.generateEmailVerificationToken();
 
     sendVerificationEmail(
@@ -39,9 +32,9 @@ export async function signup(req: Request, res: Response) {
   user.password = await bcrypt.hash(user.password, salt);
   user.save();
 
-  res.json({
+  return APIResponse.Ok(res, {
     token: user.generateAuthToken(),
-    ..._.pick(user, ['name', 'email', 'role']),
+    user,
   });
 }
 
@@ -57,6 +50,7 @@ async function sendVerificationEmail(
 
   if (!sender.email || !sender.password) {
     console.log(colors.yellow('Undefined Email | password'));
+    return;
   }
 
   const transporter = nodemailer.createTransport({

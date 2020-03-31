@@ -18,6 +18,8 @@ export interface IUser extends mongoose.Document {
   role: string;
   isVerified: boolean;
   verificationToken: string;
+  generateEmailVerificationToken(): void;
+  generateAuthToken(): string;
 }
 
 const userSchema = new mongoose.Schema({
@@ -69,6 +71,12 @@ userSchema.methods.generateAuthToken = function (): string {
     _id: this._id,
   };
   return jwt.sign(token, process.env.JWT_SECRET_KEY || '');
+};
+
+userSchema.methods.toJSON = function (): IUser {
+  const obj = this.toObject();
+  delete obj.password;
+  return obj;
 };
 
 export const User = mongoose.model<IUser>('User', userSchema);

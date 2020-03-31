@@ -1,10 +1,10 @@
 import {User} from '../../models/user';
 import {Request, Response} from 'express';
-import _ from 'lodash';
 import bcrypt from 'bcryptjs';
 import Joi from '@hapi/joi';
+import APIResponse from '../../utils/APIResponse';
 
-export async function signin(req: Request, res: Response) {
+export async function signin(req: Request, res: Response): Promise<Response> {
   const {error} = validateSignin(req.body);
 
   if (error) {
@@ -13,28 +13,20 @@ export async function signin(req: Request, res: Response) {
     });
   }
 
-  const user: any = await User.findOne({
+  const user = await User.findOne({
     email: req.body.email,
   });
 
-  if (!user) {
-    return res.status(401).json({
-      message: 'Invalid email or password!',
-    });
+  if (!user || !(await bcrypt.compare(req.body.password, user.password))) {
+    return APIResponse.Unauthorized(res, 'Invalid email or password!');
   }
 
-  const validPassword = await bcrypt.compare(req.body.password, user.password);
-  if (!validPassword) {
-    return res.status(401).json({
-      message: 'Invalid email or password!',
-    });
-  }
-
-  res.json({
+  return APIResponse.Ok(res, {
     token: user.generateAuthToken(),
-    ..._.pick(user, ['name', 'email', 'role']),
+    user,
   });
 }
+
 // prettier-ignore
 function validateSignin(user: {}): Joi.ValidationResult {
   const schema = Joi.object({
