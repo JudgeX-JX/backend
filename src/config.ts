@@ -8,17 +8,19 @@ const requiredEnv = [
   'CF_SUBMITTER_URL',
   'CF_SUBMITTER_API_KEY',
   'CF_PROBLEM_SCRAPPER_URL',
+  'ADMIN_EMAIL',
+  'ADMIN_PASSWORD',
 ];
 
 export function check(): void {
   const unsetEnv = requiredEnv.filter((env) => process.env[env] === undefined);
   if (unsetEnv.length > 0) {
     const errMsg = clrs.red(
-      `🤨 Required env variables are not set: [${clrs.yellow(
+      `Required env variables are not set: [${clrs.yellow(
         unsetEnv.join(', '.red),
       )}]`,
     );
     throw new Error(errMsg);
   }
-  console.info(clrs.green(`🤟 Configuration`));
+  console.info(clrs.green(`Configuration OKAY!`));
 }
