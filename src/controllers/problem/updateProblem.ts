@@ -16,7 +16,7 @@ export async function updateWithId(
 
   const {error} = validateProblem(req.body);
   if (error) {
-    return APIResponse.UnprocessableEntity(res, error.details[0].message);
+    return APIResponse.UnprocessableEntity(res, error.message);
   }
 
   await problem.set(req.body).save();

@@ -9,7 +9,7 @@ export async function signin(req: Request, res: Response): Promise<Response> {
 
   if (error) {
     return res.status(422).json({
-      message: error.details[0].message,
+      message: error.message,
     });
   }
 

@@ -8,7 +8,7 @@ export async function signup(req: Request, res: Response): Promise<Response> {
   const {error} = validateUser(req.body);
 
   if (error) {
-    return APIResponse.UnprocessableEntity(res, error.details[0].message);
+    return APIResponse.UnprocessableEntity(res, error.message);
   }
 
   if (await User.findOne({email: req.body.email})) {
