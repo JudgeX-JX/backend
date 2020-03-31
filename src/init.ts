@@ -1,25 +1,24 @@
 import {User, Roles} from './models/user';
-import {blue, red} from 'colors/safe';
+import bcrypt from 'bcryptjs';
 
 export default async (): Promise<void> => {
-  const password = process.env.ADMIN_PASSWORD || 'admin@admin';
+  // In a separate variable because findOne doesn't need password
+  const password = process.env.ADMIN_PASSWORD || '';
 
-  let user = await User.findOne({
-    email: 'admin@admin.com',
+  const admin = {
+    name: 'admin',
+    email: process.env.ADMIN_EMAIL || '',
+    role: Roles[Roles.ADMIN],
     fromInit: true,
-  });
+  };
 
-  if (!user) {
-    user = new User({
-      name: 'admin',
-      email: 'admin@admin.com',
-      password,
-      role: Roles[Roles.ADMIN],
-      fromInit: true,
-    });
-    await user.save();
+  const user = await User.findOne(admin);
+
+  if (user) {
+    if (!(await bcrypt.compare(password, user.password))) {
+      throw new Error("Found existing Admin but did't match password!");
+    }
+  } else {
+    await new User({...admin, password}).save();
   }
-  console.log(red('--- Created ADMIN ---'));
-  console.log(blue(`${user.email}\n${password}`));
-  console.log(red('---------------------'));
 };
