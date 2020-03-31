@@ -9,7 +9,7 @@ database
   .connect()
   .then(init)
   .then(server.run)
-  .then(() => console.info(clrs.green('🤩 Enjoy judging!')))
+  .then(() => console.info(clrs.green('Enjoy!')))
   .catch((err) => {
     console.error(err);
     process.exit(1);

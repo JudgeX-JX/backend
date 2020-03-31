@@ -33,14 +33,14 @@ export function run(): Promise<http.Server> {
 
     server.once('listening', () => {
       console.info(
-        clrs.green(`🤟 Server is listening at port ${clrs.yellow(port + '')}`),
+        clrs.green(`Server is listening on port ${clrs.yellow(port + '')}`),
       );
       resolve(server);
     });
 
     server.once('error', (err) => {
       console.error(
-        clrs.red(`🤔 Server failed to listen at ${clrs.yellow(port + '')}`),
+        clrs.red(`Server failed to listen on port ${clrs.yellow(port + '')}`),
       );
       reject(err);
     });
