@@ -59,8 +59,8 @@ export default {
   },
 
   // 422 Unprocessable Entity
-  UnprocessableEntity: (res: Response, error: string): Response => {
-    return res.status(422).json({error});
+  UnprocessableEntity: (res: Response, message: string): Response => {
+    return res.status(422).json({message});
   },
 
   // 500 Server error
