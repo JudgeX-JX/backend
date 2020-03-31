@@ -77,7 +77,7 @@ export function validateContest(contest: {}): Joi.ValidationResult {
     problems: Joi.array().required().min(1).items(Joi.string()),
     startDate: Joi.date().required().min(Date.now()),
     duration: Joi.number().required().min(1),
-    password: Joi.string().min(1).allow(null)
+    password: Joi.string().min(1)
   })
   return schema.validate(contest);
 }
