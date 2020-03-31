@@ -59,14 +59,14 @@ export default {
   },
 
   // 422 Unprocessable Entity
-  UnprocessableEntity: (res: Response, errors: any): Response => {
-    return res.status(422).json({errors});
+  UnprocessableEntity: (res: Response, error: string): Response => {
+    return res.status(422).json({error});
   },
 
   // 500 Server error
   ServerError: (
     res: Response,
-    err: any,
+    err: Error,
     message = 'Internal server error',
   ): Response => {
     console.error(err.message.red);
