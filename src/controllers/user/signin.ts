@@ -8,9 +8,7 @@ export async function signin(req: Request, res: Response): Promise<Response> {
   const {error} = validateSignin(req.body);
 
   if (error) {
-    return res.status(422).json({
-      message: error.message,
-    });
+    return APIResponse.UnprocessableEntity(res, error.message);
   }
 
   const user = await User.findOne({
