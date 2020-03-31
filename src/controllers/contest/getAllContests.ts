@@ -1,7 +1,8 @@
 import {Contest} from '../../models/contest';
 import {Request, Response} from 'express';
+import APIResponse from '../../utils/APIResponse';
 
-export function getAll(req: Request, res: Response) {
+export async function getAll(req: Request, res: Response): Promise<Response> {
   const options = {
     page: parseInt(req.query.pageNumber, 10) || 1,
     limit: parseInt(req.query.pageSize, 10) || 10,
@@ -13,10 +14,6 @@ export function getAll(req: Request, res: Response) {
       docs: 'contests',
     },
   };
-  Contest.paginate({}, options, (err, result) => {
-    if (err) {
-      return res.json({message: err});
-    }
-    res.send(result);
-  });
+  const contests = await Contest.paginate({}, options);
+  return APIResponse.Ok(res, contests);
 }
