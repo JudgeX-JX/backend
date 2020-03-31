@@ -1,5 +1,6 @@
 import {Contest} from '../../models/contest';
 import {Request, Response} from 'express';
+import APIResponse from '../../utils/APIResponse';
 
 export async function getWithId(
   req: Request,
@@ -14,10 +15,7 @@ export async function getWithId(
     })
     .populate('problems');
 
-  if (!contest) {
-    return res
-      .status(404)
-      .json({message: 'No contest with the specified id: ' + contestId});
-  }
-  return res.send(contest);
+  return contest
+    ? APIResponse.Ok(res, contest)
+    : APIResponse.NotFound(res, `no contest with id ${contestId}`);
 }

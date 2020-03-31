@@ -8,18 +8,12 @@ export async function getWithId(
 ): Promise<Response> {
   const submissionId = req.params.id;
 
-  try {
-    const submission = await Submission.findById(submissionId).populate({
-      path: 'user problem',
-      select: '-sourceCode',
-    });
-    if (!submission) {
-      return APIResponse.NotFound(res, `No submission with id ${submissionId}`);
-    }
+  const submission = await Submission.findById(submissionId).populate({
+    path: 'user problem',
+    select: '-sourceCode',
+  });
 
-    return APIResponse.Ok(res, submission);
-  } catch (err) {
-    console.log(err);
-    return APIResponse.BadRequest(res, err);
-  }
+  return submission
+    ? APIResponse.Ok(res, submission)
+    : APIResponse.NotFound(res, `no submission with id ${submissionId}`);
 }

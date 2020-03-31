@@ -1,19 +1,16 @@
 import {Problem} from '../../models/problem';
 import {Request, Response} from 'express';
+import APIResponse from '../../utils/APIResponse';
 
-export function getWithId(req: Request, res: Response) {
+export async function getWithId(
+  req: Request,
+  res: Response,
+): Promise<Response> {
   const problemId = req.params.id;
 
-  Problem.findById(problemId)
-    .then((result) => {
-      if (!result) {
-        return res
-          .status(404)
-          .json({message: 'No problem with the specified id: ' + problemId});
-      }
-      res.send(result);
-    })
-    .catch((error) => {
-      res.status(404).send(error);
-    });
+  const problem = await Problem.findById(problemId);
+
+  return problem
+    ? APIResponse.Ok(res, problem)
+    : APIResponse.NotFound(res, `no problem with id ${problemId}`);
 }
