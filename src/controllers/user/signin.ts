@@ -30,8 +30,8 @@ export async function signin(req: Request, res: Response): Promise<Response> {
 // prettier-ignore
 function validateSignin(user: {}): Joi.ValidationResult {
   const schema = Joi.object({
-    email: Joi.string().email().required().min(3).max(50),
-    password: Joi.string().required().min(6).max(50)
+    email: Joi.string().email().required(),
+    password: Joi.string().required()
   })
   return schema.validate(user);
 }
