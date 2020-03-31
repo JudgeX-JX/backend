@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 import {enumToArray} from '../utils/enumToArray';
 import {IDecodedToken} from '../middlewares';
+import bcrypt from 'bcryptjs';
 
 export enum Roles {
   ADMIN,
@@ -78,6 +79,12 @@ userSchema.methods.toJSON = function (): IUser {
   delete obj.password;
   return obj;
 };
+
+userSchema.pre('save', async function (this: IUser, next) {
+  const salt = await bcrypt.genSalt();
+  this.password = await bcrypt.hash(this.password, salt);
+  next();
+});
 
 export const User = mongoose.model<IUser>('User', userSchema);
 

@@ -1,6 +1,5 @@
 import {User, validateUser} from '../../models/user';
 import {Request, Response} from 'express';
-import bcrypt from 'bcryptjs';
 import nodemailer from 'nodemailer';
 import colors from 'colors/safe';
 import APIResponse from '../../utils/APIResponse';
@@ -28,10 +27,7 @@ export async function signup(req: Request, res: Response): Promise<Response> {
     );
   }
 
-  const salt = await bcrypt.genSalt(10);
-  user.password = await bcrypt.hash(user.password, salt);
-  user.save();
-
+  await user.save();
   return APIResponse.Ok(res, {
     token: user.generateAuthToken(),
     user,
