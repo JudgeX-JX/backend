@@ -1,7 +1,6 @@
 import {Request, Response} from 'express';
 import {Contest} from '../../models/contest';
 import APIResponse from '../../utils/APIResponse';
-import {Submission} from '../../models/submission';
 import {IAuthenticatedRequest} from '../../middlewares';
 
 export async function getAll(req: Request, res: Response): Promise<Response> {
