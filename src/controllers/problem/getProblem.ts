@@ -1,6 +1,7 @@
 import {Problem} from '../../models/problem';
 import {Request, Response} from 'express';
 import APIResponse from '../../utils/APIResponse';
+import noId from '../../utils/noId';
 
 export async function getWithId(
   req: Request,
@@ -12,5 +13,5 @@ export async function getWithId(
 
   return problem
     ? APIResponse.Ok(res, problem)
-    : APIResponse.NotFound(res, `no problem with id ${problemId}`);
+    : APIResponse.NotFound(res, noId(Problem, problemId));
 }

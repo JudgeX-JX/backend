@@ -1,6 +1,7 @@
 import {Contest} from '../../models/contest';
 import {Request, Response} from 'express';
 import APIResponse from '../../utils/APIResponse';
+import noId from '../../utils/noId';
 
 export async function deleteWithId(
   req: Request,
@@ -13,10 +14,7 @@ export async function deleteWithId(
     select: 'name',
   });
   if (!contest) {
-    return APIResponse.Ok(
-      res,
-      'No contest with the specified id: ' + contestId,
-    );
+    return APIResponse.Ok(res, noId(Contest, contestId));
   }
   contest.remove();
   return APIResponse.Ok(res, contest);

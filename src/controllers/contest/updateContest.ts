@@ -1,6 +1,7 @@
 import {Contest, validateContest, validProblemIDs} from '../../models/contest';
 import {Request, Response} from 'express';
 import APIResponse from '../../utils/APIResponse';
+import noId from '../../utils/noId';
 
 export async function updateWithId(
   req: Request,
@@ -11,7 +12,7 @@ export async function updateWithId(
   const contest = await Contest.findById(contestId);
 
   if (!contest) {
-    return APIResponse.NotFound(res, 'No contest with id ' + contestId);
+    return APIResponse.NotFound(res, noId(Contest, contestId));
   }
 
   const {error} = validateContest(req.body);

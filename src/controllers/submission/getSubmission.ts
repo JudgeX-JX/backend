@@ -1,6 +1,7 @@
 import {Submission} from '../../models/submission';
 import {Request, Response} from 'express';
 import APIResponse from '../../utils/APIResponse';
+import noId from '../../utils/noId';
 
 export async function getWithId(
   req: Request,
@@ -15,5 +16,5 @@ export async function getWithId(
 
   return submission
     ? APIResponse.Ok(res, submission)
-    : APIResponse.NotFound(res, `no submission with id ${submissionId}`);
+    : APIResponse.NotFound(res, noId(Submission, submissionId));
 }

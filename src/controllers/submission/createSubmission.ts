@@ -4,6 +4,9 @@ import APIResponse from '../../utils/APIResponse';
 import {IAuthenticatedRequest} from '../../middlewares';
 import {BaseJudge} from '../../lib/Judge/BaseJudge';
 import {JudgeFactory} from '../../lib/Judge/JudgeFactory';
+import noId from '../../utils/noId';
+import {Problem} from '../../models/problem';
+import {Contest} from '../../models/contest';
 
 export async function create(req: Request, res: Response): Promise<Response> {
   req.body.problem = req.params.problemID;
@@ -29,13 +32,13 @@ export async function create(req: Request, res: Response): Promise<Response> {
   if (!submission.problem) {
     return APIResponse.UnprocessableEntity(
       res,
-      `No valid problem with id: ${req.params.problemID}`,
+      noId(Problem, req.params.problemID),
     );
   }
   if (!submission.contest) {
     return APIResponse.UnprocessableEntity(
       res,
-      `No contest with id: ${req.params.contestID}`,
+      noId(Contest, req.params.contestID),
     );
   }
   // can submit?

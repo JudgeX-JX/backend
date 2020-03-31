@@ -1,6 +1,7 @@
 import {Problem, validateProblem} from '../../models/problem';
 import {Request, Response} from 'express';
 import APIResponse from '../../utils/APIResponse';
+import noId from '../../utils/noId';
 
 export async function updateWithId(
   req: Request,
@@ -11,7 +12,7 @@ export async function updateWithId(
   const problem = await Problem.findById(problemId);
 
   if (!problem) {
-    return APIResponse.NotFound(res, `No problem with id ${problemId}`);
+    return APIResponse.NotFound(res, noId(Problem, problemId));
   }
 
   const {error} = validateProblem(req.body);

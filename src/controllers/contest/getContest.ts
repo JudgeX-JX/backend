@@ -1,6 +1,7 @@
 import {Contest} from '../../models/contest';
 import {Request, Response} from 'express';
 import APIResponse from '../../utils/APIResponse';
+import noId from '../../utils/noId';
 
 export async function getWithId(
   req: Request,
@@ -17,5 +18,5 @@ export async function getWithId(
 
   return contest
     ? APIResponse.Ok(res, contest)
-    : APIResponse.NotFound(res, `no contest with id ${contestId}`);
+    : APIResponse.NotFound(res, noId(Contest, contestId));
 }
