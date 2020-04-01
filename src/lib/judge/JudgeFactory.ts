@@ -6,7 +6,7 @@ import {ISubmission, judgeSubmissionID} from '../../models/submission';
 import {BaseJudge} from './BaseJudge';
 
 export interface IJudge extends BaseJudge {
-  submit(): Promise<judgeSubmissionID>;
+  submit(): Promise<void>;
   getVerdict(judgeSubmissionID: judgeSubmissionID): Promise<string>;
 }
 
