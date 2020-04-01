@@ -39,17 +39,14 @@ const standingSchema = new mongoose.Schema({
       },
       isAccepted: {
         type: Boolean,
-        required: true,
         default: false,
       },
       isFirstAccepted: {
         type: Boolean,
-        required: true,
         default: false,
       },
       failedSubmissions: {
         type: Number,
-        required: true,
         default: 0,
       },
       submissions: {
@@ -59,18 +56,16 @@ const standingSchema = new mongoose.Schema({
       },
       solvedAt: {
         type: Date,
-        required: true,
       },
+      _id: false,
     },
   ],
   solved: {
     type: Number,
-    required: true,
     default: 0,
   },
   penality: {
     type: Number,
-    required: true,
     default: 0,
   },
 });
