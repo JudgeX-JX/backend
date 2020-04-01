@@ -2,10 +2,10 @@ import {IContest} from '../../models/contest';
 import {IUser} from '../../models/user';
 import {IProblem} from '../../models/problem';
 import {ISubmission, Submission} from '../../models/submission';
-import {Standing} from '../../models/standing';
+import {Standing, IStanding} from '../../models/standing';
 
 export class BaseJudge {
-  readonly SUBMISSION_PENALITY = 20;
+  readonly WRONG_ANSWER_PENALITY = 20;
   protected contest: IContest;
   protected user: IUser;
   protected problem: IProblem;
@@ -16,8 +16,46 @@ export class BaseJudge {
       user: this.user,
       problem: this.problem,
     } = submission);
+    this.init();
+  }
+
+  private async init(): Promise<void> {
+    // problem: un-finished submissions don't get updated
+    // push the submissions to the queue if isStillJudging
+    // the queue should update the problem verdict every 5 seconds
+    // the queue should remove the finished and judged submissions
     if (this.isDuringContest()) {
+      const standing = await this.getUserStanding();
+      const problem = standing.problems.find(({problem}) =>
+        problem._id.equals(this.problem._id),
+      ); // find current submitted problem
+
+      if (!problem) {
+        throw new Error('problem id not found ');
+      }
+      // add submission to the standing
+      problem.submissions.push(this.submission);
+      await standing.save();
     }
+  }
+
+  /**
+   * Returns standing if found for user, creates one otherwise
+   */
+  async getUserStanding(): Promise<IStanding> {
+    return (
+      (await Standing.findOne({
+        user: this.user,
+        contest: this.contest,
+      })) ||
+      (await new Standing({
+        user: this.user,
+        contest: this.contest,
+        problems: this.contest.problems.map((problem) => {
+          return {problem};
+        }),
+      }).save())
+    );
   }
 
   static contestStarted(contest: IContest): boolean {
@@ -30,25 +68,6 @@ export class BaseJudge {
     const end = new Date();
     end.setTime(start.getTime() + this.contest.duration * 60 * 1000);
     return new Date() < end && BaseJudge.contestStarted(this.contest);
-  }
-
-  createStandingForUser(): {} {
-    const standing = new Standing({
-      user: this.user,
-      contest: this.contest,
-      penality: 0,
-      problems: this.contest.problems.map((p) => {
-        return {
-          p,
-          isAccepted: false,
-          failedSubmissions: 0,
-          totalSubmissions: 0,
-          isFirstAccepted: false,
-        };
-      }),
-    });
-    standing.save();
-    return standing;
   }
 
   async isFirstAccepted(): Promise<boolean> {
@@ -64,15 +83,6 @@ export class BaseJudge {
   }
 
   calculateAcceptedPenality(): number {
-    return (
-      new Date().getMinutes() - new Date(this.contest.startDate).getMinutes()
-    );
-  }
-
-  isStillJudging(): boolean {
-    const verdict = this.submission.verdict.trim().toLowerCase();
-    const stillJudging =
-      verdict.startsWith('running') || verdict.startsWith('in');
-    return stillJudging;
+    return new Date().getTime() - new Date(this.contest.startDate).getTime();
   }
 }

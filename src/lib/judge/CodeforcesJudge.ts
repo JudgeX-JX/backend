@@ -1,7 +1,7 @@
 import {IJudge} from './JudgeFactory';
 import {BaseJudge} from './BaseJudge';
 import {ISubmission, judgeSubmissionID} from '../../models/submission';
-import Axios from 'axios';
+import Axios, {AxiosRequestConfig} from 'axios';
 
 export class CodeforcesJudge extends BaseJudge implements IJudge {
   cfSubmitterBaseUrl: string;
@@ -27,25 +27,24 @@ export class CodeforcesJudge extends BaseJudge implements IJudge {
     const resp = await Axios.post(
       `${this.cfSubmitterBaseUrl}/submit`,
       submission,
-      {
-        headers: {
-          'x-api-key': this.cfSubmitterApiKey,
-        },
-      },
+      this.getConfig(),
     );
-    // TODO check if submission is pending or finished << at judge
     return resp.data.id;
   }
 
   async getVerdict(judgeSubmissionID: string): Promise<string> {
     const resp = await Axios.get(
       `${this.cfSubmitterBaseUrl}/submission/${this.submission.contest}/${judgeSubmissionID}`,
-      {
-        headers: {
-          'x-api-key': this.cfSubmitterApiKey,
-        },
-      },
+      this.getConfig(),
     );
     return resp.data;
+  }
+
+  getConfig(): AxiosRequestConfig {
+    return {
+      headers: {
+        'x-api-key': this.cfSubmitterApiKey,
+      },
+    };
   }
 }
