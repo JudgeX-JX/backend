@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 import {IContest} from './contest';
 import {IUser} from './user';
 import {IProblem} from './problem';
+import {ISubmission} from './submission';
 
 export interface IStanding extends mongoose.Document {
   contest: IContest;
@@ -11,8 +12,8 @@ export interface IStanding extends mongoose.Document {
     isAccepted: boolean;
     isFirstAccepted: boolean;
     failedSubmissions: number;
-    totalSubmissions: number;
     solvedAt: Date;
+    submissions: ISubmission[];
   }[];
   solved: number;
   penality: number;
@@ -51,10 +52,10 @@ const standingSchema = new mongoose.Schema({
         required: true,
         default: 0,
       },
-      totalSubmissions: {
-        type: Number,
-        required: true,
-        default: 0,
+      submissions: {
+        type: [mongoose.Types.ObjectId],
+        ref: 'Submission',
+        default: [],
       },
       solvedAt: {
         type: Date,
