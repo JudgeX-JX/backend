@@ -74,15 +74,15 @@ const submissionSchema = new mongoose.Schema(
     },
     time: {
       type: Number,
-      default: null,
+      default: 0,
     },
     languageID: {
       type: Number,
       required: true,
     },
     memory: {
-      type: String,
-      default: null,
+      type: Number,
+      default: 0,
     },
   },
   {
