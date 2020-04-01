@@ -25,7 +25,7 @@ export interface ISubmission extends mongoose.Document {
   problem: IProblem;
   user: IUser;
   isDuringContest: boolean;
-  judged: boolean;
+  isJudged: boolean;
   judgeSubmissionID: judgeSubmissionID;
   sourceCode: string;
   verdict: string;
@@ -55,7 +55,7 @@ const submissionSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    judged: {
+    isJudged: {
       type: Boolean,
       required: true,
       default: false,
