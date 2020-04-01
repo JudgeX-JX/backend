@@ -25,7 +25,7 @@ export async function create(req: Request, res: Response): Promise<Response> {
     })
     .populate({
       path: 'contest',
-      select: 'startDate duration',
+      select: 'startDate duration problems',
     })
     .execPopulate();
 
@@ -51,8 +51,11 @@ export async function create(req: Request, res: Response): Promise<Response> {
 
   const judge = new JudgeFactory(submission.problem).createJudge(submission);
 
-  submission.judgeSubmissionID = await judge.submit();
-  await submission.save();
+  try {
+    judge.submit();
+  } catch (err) {
+    console.error(err);
+  }
 
-  return APIResponse.Created(res, 'Submitted Successfully!');
+  return APIResponse.Created(res, submission);
 }
