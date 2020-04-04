@@ -2,12 +2,20 @@ import {CodeforcesJudge} from './CodeforcesJudge';
 import {Judge0Judge} from './Judge0Judge';
 import {LocalJudge} from './LocalJudge';
 import {IProblem, JudgeType} from '../../models/problem';
-import {ISubmission, judgeSubmissionID} from '../../models/submission';
+import {ISubmission} from '../../models/submission';
 import {BaseJudge} from './BaseJudge';
+
+export interface ISubmitterResponse {
+  judgeSubmissionID: string;
+  verdict: string;
+  isJudged: boolean;
+  time: number;
+  memory: number;
+}
 
 export interface IJudge extends BaseJudge {
   submit(): Promise<void>;
-  getVerdict(judgeSubmissionID: judgeSubmissionID): Promise<string>;
+  getVerdict(): Promise<ISubmitterResponse>;
 }
 
 export class JudgeFactory {

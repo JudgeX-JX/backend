@@ -1,4 +1,4 @@
-import {IJudge} from './JudgeFactory';
+import {IJudge, ISubmitterResponse} from './JudgeFactory';
 import {BaseJudge} from './BaseJudge';
 import {ISubmission} from '../../models/submission';
 
@@ -9,7 +9,7 @@ export class LocalJudge extends BaseJudge implements IJudge {
   submit(): Promise<void> {
     throw new Error('Method not implemented.');
   }
-  getVerdict(judgeSubmissionID: string): Promise<string> {
+  getVerdict(): Promise<ISubmitterResponse> {
     throw new Error('Method not implemented.');
   }
 }

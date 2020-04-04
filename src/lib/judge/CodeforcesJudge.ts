@@ -1,56 +1,48 @@
-import {IJudge} from './JudgeFactory';
+import {IJudge, ISubmitterResponse} from './JudgeFactory';
 import {BaseJudge} from './BaseJudge';
 import {ISubmission} from '../../models/submission';
 import Axios, {AxiosRequestConfig} from 'axios';
+import SubmissionsQ from '../submission-consumers/SubmissionsQ';
 
 export class CodeforcesJudge extends BaseJudge implements IJudge {
   cfSubmitterBaseUrl: string;
   cfSubmitterApiKey: string;
+  cfContestID: string;
+  cfProblemID: string;
 
   constructor(submission: ISubmission) {
     super(submission);
     this.cfSubmitterBaseUrl = process.env.CF_SUBMITTER_URL || '';
     this.cfSubmitterApiKey = process.env.CF_SUBMITTER_API_KEY || '';
-  }
-
-  async submit(): Promise<void> {
     const cfID = this.problem.judge.cfID?.split('/');
     if (!cfID) {
       throw new Error('Not valid cfID' + cfID);
     }
+    [this.cfContestID, this.cfProblemID] = cfID;
+  }
+
+  async submit(): Promise<void> {
     const submission = {
       sourceCode: this.submission.sourceCode,
       langId: this.submission.languageID,
-      contestId: cfID[0],
-      problem: cfID[1],
+      contestId: this.cfContestID,
+      problem: this.cfProblemID,
     };
     const response = await Axios.post(
       `${this.cfSubmitterBaseUrl}/submit`,
       submission,
       this.getConfig(),
     );
-    const {
-      id: judgeSubmissionID,
-      verdict,
-      isJudged,
-      time,
-      memory,
-    } = response.data;
-    this.submission.set({
-      judgeSubmissionID,
-      verdict,
-      isJudged,
-      time: time.split('')[0],
-      memory: memory.split('')[0],
-    });
+    this.submission.set(response.data);
     await this.submission.save();
+    if (this.submission.isJudged === false) {
+      SubmissionsQ.send(SubmissionsQ.pendingQ, this.submission);
+    }
   }
 
-  async getVerdict(judgeSubmissionID: string): Promise<string> {
-    const resp = await Axios.get(
-      `${this.cfSubmitterBaseUrl}/submission/${this.submission.contest}/${judgeSubmissionID}`,
-      this.getConfig(),
-    );
+  async getVerdict(): Promise<ISubmitterResponse> {
+    const url = `${this.cfSubmitterBaseUrl}/submission/${this.cfContestID}/${this.submission.judgeSubmissionID}`;
+    const resp = await Axios.get(url, this.getConfig());
     return resp.data;
   }
 
