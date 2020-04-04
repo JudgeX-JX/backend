@@ -3,6 +3,8 @@ import jwt from 'jsonwebtoken';
 
 import APIResponse from '../utils/APIResponse';
 import {AuthenticatedUser} from './AuthenticatedUser';
+import noId from '../utils/noId';
+import {User} from '../models/user';
 
 export interface IDecodedToken {
   readonly _id: string;
@@ -24,11 +26,11 @@ export function _auth(token: string): AuthenticatedUser {
   return new AuthenticatedUser(decodedToken);
 }
 
-export function authenticate(
+export async function authenticate(
   req: Request,
   res: Response,
   next: NextFunction,
-): Response | undefined {
+): Promise<Response | undefined> {
   const token = req.token;
 
   if (!token) {
@@ -36,7 +38,12 @@ export function authenticate(
   }
 
   try {
-    (req as IAuthenticatedRequest).authenticatedUser = _auth(token);
+    const authenticatedUser = _auth(token);
+    if ((await authenticatedUser.getUserFromDB()) === null) {
+      return APIResponse.Unauthorized(res, noId(User, authenticatedUser._id));
+    }
+    (req as IAuthenticatedRequest).authenticatedUser = authenticatedUser;
+
     next();
   } catch (error) {
     console.error(error);
