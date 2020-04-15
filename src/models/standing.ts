@@ -3,10 +3,11 @@ import {IContest} from './contest';
 import {IUser} from './user';
 import {IProblem} from './problem';
 import {ISubmission} from './submission';
+import {PossibleDocumentOrObjectID} from '../utils/types';
 
 export interface IStanding extends mongoose.Document {
   contest: IContest;
-  user: IUser;
+  user: IUser | PossibleDocumentOrObjectID;
   problems: {
     problem: IProblem;
     isAccepted: boolean;

@@ -3,11 +3,12 @@ import {IUser} from '../../models/user';
 import {IProblem} from '../../models/problem';
 import {ISubmission, Submission} from '../../models/submission';
 import {Standing, IStanding} from '../../models/standing';
+import {PossibleDocumentOrObjectID} from '../../utils/types';
 
 export class BaseJudge {
   readonly WRONG_ANSWER_PENALITY = 20;
   protected contest: IContest;
-  protected user: IUser;
+  protected user: IUser | PossibleDocumentOrObjectID;
   protected problem: IProblem;
 
   constructor(protected submission: ISubmission) {

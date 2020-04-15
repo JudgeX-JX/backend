@@ -1,5 +1,6 @@
 import amqplib from 'amqplib';
 import {ISubmission} from '../../models/submission';
+import whichQ from './whichQ';
 
 export default class SubmissionsQ {
   private static isInit = false;
@@ -20,7 +21,8 @@ export default class SubmissionsQ {
     }
   }
 
-  public static send(qName: string, data: ISubmission): void {
+  public static send(data: ISubmission): void {
+    const qName = whichQ(data);
     this.channel.sendToQueue(qName, Buffer.from(JSON.stringify(data)));
   }
 }

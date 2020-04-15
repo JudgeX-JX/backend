@@ -15,15 +15,13 @@ import SubmissionsQ from './SubmissionsQ';
     const response = await new JudgeFactory(submission.problem)
       .createJudge(submission)
       .getVerdict();
-    SubmissionsQ.channel.ack(msg); // remove the submission from the Q
-    let q = SubmissionsQ.pendingQ;
     if (response.isJudged) {
       submission = {
         ...submission,
         ...response,
       };
-      q = SubmissionsQ.judgedQ;
     }
-    setTimeout(() => SubmissionsQ.send(q, submission), 5000);
+    SubmissionsQ.channel.ack(msg); // remove the submission from the Q
+    setTimeout(() => SubmissionsQ.send(submission), 5000);
   });
 })();

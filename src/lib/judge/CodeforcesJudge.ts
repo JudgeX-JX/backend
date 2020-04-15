@@ -34,10 +34,7 @@ export class CodeforcesJudge extends BaseJudge implements IJudge {
       this.getConfig(),
     );
     this.submission.set(response.data);
-    await this.submission.save();
-    if (this.submission.isJudged === false) {
-      SubmissionsQ.send(SubmissionsQ.pendingQ, this.submission);
-    }
+    SubmissionsQ.send(this.submission);
   }
 
   async getVerdict(): Promise<ISubmitterResponse> {

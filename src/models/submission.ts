@@ -23,7 +23,7 @@ export interface ISubmission extends mongoose.Document {
   updatedAt: string;
   contest: IContest;
   problem: IProblem;
-  user: IUser;
+  user: IUser | string;
   isDuringContest: boolean;
   isJudged: boolean;
   judgeSubmissionID: judgeSubmissionID;
