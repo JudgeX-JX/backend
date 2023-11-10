@@ -23,7 +23,7 @@
   "dependencies": {
     "@hapi/joi": "^17.1.1",
     "amqplib": "^0.10.3",
-    "axios": "^0.21.2",
+    "axios": "^1.6.0",
     "bcryptjs": "^2.4.3",
     "colors": "^1.4.0",
     "cors": "^2.8.5",
